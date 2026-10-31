@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieZ - Mon Cinéma Personnel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Barre de Navigation -->
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="logo" id="brandLogo">
+        <span class="logo-icon">🎬</span>
+        <span class="logo-text">Movie<span class="highlight">Z</span></span>
+      </div>
+      <nav class="nav-links">
+        <button class="nav-btn active" data-filter="all">Tous</button>
+        <button class="nav-btn" data-filter="movie">Films</button>
+        <button class="nav-btn" data-filter="tv">Séries</button>
+        <button class="nav-btn nav-tab-badge" data-filter="history">
+          Reprendre <span id="historyBadgeCount" class="nav-badge" style="display:none;">0</span>
+        </button>
+        <button class="nav-btn nav-tab-badge" data-filter="wishlist">
+          Ma Liste <span id="wishlistBadgeCount" class="nav-badge" style="display:none;">0</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="nav-right">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Rechercher un film ou une série...">
+        <button id="clearSearch" class="clear-btn" style="display:none;">&times;</button>
+      </div>
+
+      <!-- Bouton Notifications -->
+      <div class="dropdown-wrapper">
+        <button id="notifBtn" class="icon-btn" title="Notifications sorties">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span id="notifDot" class="notif-dot" style="display:none;"></span>
+        </button>
+        <div id="notifDropdown" class="notif-dropdown">
+          <div class="notif-header">
+            <h4>Notifications de sorties</h4>
+            <button id="enableNotifBtn" class="link-btn">Activer les alertes</button>
+          </div>
+          <div id="notifList" class="notif-list">
+            <p class="empty-notif">Aucune nouvelle sortie pour l'instant.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bouton Caster / TV -->
+      <button id="castBtn" class="icon-btn" title="Caster sur TV & autres appareils">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
+          <line x1="2" y1="20" x2="2.01" y2="20"></line>
+        </svg>
+      </button>
+
+      <!-- Bouton Paramètres -->
+      <button id="openSettingsBtn" class="icon-btn" title="Configuration">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Bannière Hero / En vedette -->
+  <section id="heroSection" class="hero-section">
+    <div class="hero-backdrop" id="heroBackdrop"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-badge" id="heroBadge">À l'affiche</span>
+      <h1 class="hero-title" id="heroTitle">Chargement...</h1>
+      <p class="hero-overview" id="heroOverview"></p>
+      <div class="hero-actions">
+        <button id="heroPlayBtn" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Regarder maintenant
+        </button>
+        <button id="heroWishlistBtn" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          <span id="heroWishlistText">Ajouter à ma liste</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenu Principal -->
+  <main class="main-container">
+    <div class="section-header">
+      <div class="section-header-left">
+        <h2 id="sectionTitle">Tendances actuelles</h2>
+        <span id="resultsCount" class="results-count"></span>
+      </div>
+      <div id="clearHistoryBtnWrapper" style="display:none;">
+        <button id="clearHistoryBtn" class="btn btn-sm btn-ghost">Vider l'historique</button>
+      </div>
+    </div>
+
+    <!-- Grille des médias -->
+    <div id="mediaGrid" class="media-grid"></div>
+
+    <!-- Message de statut -->
+    <div id="statusMessage" class="status-message" style="display:none;"></div>
+  </main>
+
+  <!-- Modal Lecteur Vidéo (Player) -->
+  <div id="playerModal" class="modal">
+    <div class="modal-backdrop" id="closeModalBackdrop"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3 id="modalMediaTitle">Titre de la vidéo</h3>
+          <span id="modalMediaType" class="badge">Film</span>
+          <span id="modalCurrentEpBadge" class="badge badge-accent" style="display:none;"></span>
+        </div>
+        <div class="modal-header-actions">
+          <button id="modalWishlistBtn" class="icon-btn-sm" title="Ajouter / Retirer de ma liste">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          </button>
+          <button id="closeModalBtn" class="modal-close">&times;</button>
+        </div>
+      </div>
+
+      <!-- Contrôles du Lecteur -->
+      <div class="player-controls">
+        <!-- Choix du Lecteur / Serveur alternatif -->
+        <div class="control-group">
+          <label>Serveur</label>
+          <div class="pill-group" id="serverPillGroup">
+            <button class="pill-btn active" data-server="vidzy" title="Serveur 1 (Vidzy - VF/VOSTFR)">Vidzy</button>
+            <button class="pill-btn" data-server="vidsrc" title="Serveur 2 (VidSrc - Alternatif)">VidSrc</button>
+            <button class="pill-btn" data-server="embedsu" title="Serveur 3 (EmbedSu - HD)">EmbedSu</button>
+            <button class="pill-btn" data-server="superembed" title="Serveur 4 (SuperEmbed)">SuperEmbed</button>
+          </div>
+        </div>
+
+        <!-- Pour les séries : choix saison et épisode -->
+        <div id="seriesControls" class="series-controls" style="display:none;">
+          <div class="control-group">
+            <label for="seasonSelect">Saison</label>
+            <select id="seasonSelect" class="custom-select"></select>
+          </div>
+          <div class="control-group">
+            <label for="episodeSelect">Épisode</label>
+            <select id="episodeSelect" class="custom-select"></select>
+          </div>
+        </div>
+
+        <!-- Choix de langue -->
+        <div class="control-group">
+          <label>Audio</label>
+          <div class="pill-group" id="langPillGroup">
+            <button class="pill-btn active" data-lang="">Auto</button>
+            <button class="pill-btn" data-lang="vf">VF</button>
+            <button class="pill-btn" data-lang="vostfr">VOSTFR</button>
+          </div>
+        </div>
+
+        <!-- Autoplay -->
+        <div class="control-group toggle-group">
+          <label for="autoplayToggle">Lecture auto</label>
+          <input type="checkbox" id="autoplayToggle" class="switch" checked>
+        </div>
+
+        <!-- Marquer comme terminé -->
+        <div class="control-group">
+          <button id="markCompletedBtn" class="btn btn-sm btn-outline">
+            ✓ Marquer comme vu
+          </button>
+        </div>
+      </div>
+
+      <!-- Iframe Sécurisée Anti Pop-up Sandbox -->
+      <div class="iframe-container">
+        <div id="playerLoader" class="player-loader">
+          <div class="spinner"></div>
+          <span>Chargement du lecteur Vidzy...</span>
+        </div>
+        <iframe 
+          id="videoIframe" 
+          src="" 
+          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-encrypted-media"
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <!-- Détails sur le média -->
+      <div class="media-details">
+        <div class="meta-tags">
+          <span id="modalRating" class="tag rating-tag">⭐ 0.0</span>
+          <span id="modalReleaseDate" class="tag">Année</span>
+          <span id="modalGenres" class="tag">Genres</span>
+          <span class="tag tag-safe">🛡️ Anti Pop-up Actif</span>
+        </div>
+        <p id="modalOverview" class="media-synopsis"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Cast & Diffusion TV -->
+  <div id="castModal" class="modal">
+    <div class="modal-backdrop" id="closeCastBackdrop"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span style="font-size:1.4rem;">📺</span>
+          <h3>Regarder sur votre TV & Appareils</h3>
+        </div>
+        <button id="closeCastBtn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="cast-card highlight-card">
+          <div class="cast-icon">🌐</div>
+          <div class="cast-info">
+            <h4>Accès direct depuis votre Smart TV, Box, Tablette ou Téléphone</h4>
+            <p>Connectez votre TV ou téléphone au même réseau Wi-Fi, ouvrez le navigateur web (Chrome, Samsung Internet, etc.) et entrez cette adresse :</p>
+            <div class="url-copy-box">
+              <code id="localNetworkUrl">http://192.168.1.8:3000</code>
+              <button id="copyUrlBtn" class="btn btn-sm btn-primary">Copier l'adresse</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cast-card">
+          <div class="cast-icon">📡</div>
+          <div class="cast-info">
+            <h4>Google Cast / Chromecast / Android TV</h4>
+            <p>Depuis votre navigateur sur PC (Chrome ou Brave) : faites un <strong>clic-droit sur la page</strong> > sélectionnez <strong>« Caster... »</strong> puis choisissez votre TV pour diffuser en direct.</p>
+          </div>
+        </div>
+
+        <div class="cast-card">
+          <div class="cast-icon">🛡️</div>
+          <div class="cast-info">
+            <h4>Bloqueur de Pop-ups intégré</h4>
+            <p>Le lecteur de MovieZ intègre un bac à sable (sandbox) qui neutralise physiquement l'ouverture d'onglets publicitaires.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Paramètres TMDB -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-backdrop" id="closeSettingsBackdrop"></div>
+    <div class="modal-dialog small-dialog">
+      <div class="modal-header">
+        <h3>Configuration TMDB</h3>
+        <button id="closeSettingsBtn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="helper-text">
+          Votre clé TMDB est configurée et sauvegardée. Vous pouvez la modifier si nécessaire :
+        </p>
+        <div class="form-group">
+          <label for="apiKeyInput">Clé d'API TMDB :</label>
+          <input type="text" id="apiKeyInput" class="text-input">
+        </div>
+        <div class="settings-actions">
+          <button id="saveApiKeyBtn" class="btn btn-primary">Enregistrer la clé</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

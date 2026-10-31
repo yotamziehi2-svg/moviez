@@ -1,0 +1,4 @@
+// Configuration locale de MovieZ (chargée automatiquement)
+window.CONFIG = {
+  TMDB_API_KEY: 'b50b12e7db90800c59536e2bbd8f4aa7'
+};
