@@ -15,6 +15,12 @@ let currentServer = 'vidzy'; // 'vidzy', 'vidsrc', 'embedsu', 'superembed'
 let autoplay = true;
 let searchTimeout = null;
 
+// Pagination / Infinite Scroll
+let currentPage = 1;
+let totalPages = 1;
+let isLoadingMore = false;
+let heroShown = false;
+
 // Helper pour détecter fidèlement si un média est un film ou une série
 function isMovieMedia(item) {
   if (!item) return true;
@@ -121,7 +127,8 @@ function restoreActiveTab() {
   } else if (currentFilter === 'wishlist') {
     renderWishlist();
   } else {
-    loadContent();
+    currentPage = 1;
+    loadContent(1);
   }
 }
 
@@ -152,6 +159,69 @@ async function fetchTMDB(endpoint, params = {}) {
   return res.json();
 }
 
+// ============ INFINITE SCROLL ============
+let scrollObserver = null;
+
+function setupInfiniteScroll() {
+  // Remove old sentinel if exists
+  const oldSentinel = document.getElementById('scrollSentinel');
+  if (oldSentinel) oldSentinel.remove();
+
+  const sentinel = document.createElement('div');
+  sentinel.id = 'scrollSentinel';
+  sentinel.style.cssText = 'height:1px;margin-top:20px;';
+  document.querySelector('.main-container').appendChild(sentinel);
+
+  if (scrollObserver) scrollObserver.disconnect();
+
+  scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !isLoadingMore && currentPage < totalPages) {
+        loadMoreContent();
+      }
+    });
+  }, { rootMargin: '200px' });
+
+  scrollObserver.observe(sentinel);
+}
+
+function loadMoreContent() {
+  if (isLoadingMore || currentPage >= totalPages) return;
+  isLoadingMore = true;
+  currentPage++;
+  showScrollLoader();
+
+  if (currentSearchQuery) {
+    performSearch(currentSearchQuery, currentPage);
+  } else if (['all', 'movie', 'tv'].includes(currentFilter)) {
+    loadContent(currentPage);
+  }
+}
+
+function showScrollLoader() {
+  let loader = document.getElementById('scrollLoader');
+  if (!loader) {
+    loader = document.createElement('div');
+    loader.id = 'scrollLoader';
+    loader.innerHTML = '<div class="scroll-loading"><div class="spinner"></div><span>Chargement...</span></div>';
+    document.querySelector('.main-container').appendChild(loader);
+  }
+  loader.style.display = 'flex';
+}
+
+function hideScrollLoader() {
+  const loader = document.getElementById('scrollLoader');
+  if (loader) loader.style.display = 'none';
+}
+
+function updateLoadMoreBtn() {
+  // Setup infinite scroll on first page load
+  if (currentPage === 1 || !document.getElementById('scrollSentinel')) {
+    setupInfiniteScroll();
+  }
+}
+
+// ============ ÉCOUTEURS D'ÉVÉNEMENTS ============
 // Configuration des écouteurs d'événements
 function setupEventListeners() {
   // Logo click
@@ -175,13 +245,16 @@ function setupEventListeners() {
       searchInput.value = '';
       currentSearchQuery = '';
       clearSearchBtn.style.display = 'none';
+      currentPage = 1;
+      totalPages = 1;
+      isLoadingMore = false;
 
       if (currentFilter === 'history') {
         renderHistory();
       } else if (currentFilter === 'wishlist') {
         renderWishlist();
       } else {
-        loadContent();
+        loadContent(1);
       }
     });
   });
@@ -204,8 +277,11 @@ function setupEventListeners() {
     searchTimeout = setTimeout(() => {
       currentSearchQuery = query;
       if (query.length >= 2) {
-        performSearch(query);
+        currentPage = 1;
+        totalPages = 1;
+        performSearch(query, 1);
       } else if (query.length === 0) {
+        currentPage = 1;
         restoreActiveTab();
       }
     }, 400);
@@ -330,43 +406,60 @@ function setupEventListeners() {
 }
 
 // Chargement du contenu d'accueil
-async function loadContent() {
+async function loadContent(page = 1) {
   clearHistoryBtnWrapper.style.display = 'none';
-  showLoader();
+  if (page === 1) {
+    showLoader();
+    heroShown = false;
+  }
+
   try {
     let data;
     if (currentFilter === 'movie') {
       sectionTitle.textContent = 'Films Populaires';
-      data = await fetchTMDB('/movie/popular');
+      data = await fetchTMDB('/movie/popular', { page });
     } else if (currentFilter === 'tv') {
       sectionTitle.textContent = 'Séries Populaires';
-      data = await fetchTMDB('/tv/popular');
+      data = await fetchTMDB('/tv/popular', { page });
     } else {
       sectionTitle.textContent = 'Tendances du moment';
-      data = await fetchTMDB('/trending/all/day');
+      data = await fetchTMDB('/trending/all/day', { page });
     }
 
+    totalPages = data.total_pages || 1;
     const items = (data.results || []).filter(item => item.poster_path && (item.title || item.name));
+
     if (items.length > 0) {
-      renderHero(items[0]);
-      renderGrid(items);
-      resultsCount.textContent = `${items.length} titres`;
-    } else {
+      if (page === 1) {
+        mediaGrid.innerHTML = '';
+        mediaGrid.style.display = 'grid';
+        statusMessage.style.display = 'none';
+        renderHero(items[0]);
+        heroShown = true;
+      }
+      appendCards(items);
+      resultsCount.textContent = `Page ${page} / ${totalPages}`;
+      updateLoadMoreBtn();
+    } else if (page === 1) {
       showEmpty('Aucun titre trouvé.');
     }
   } catch (err) {
     showError(err.message);
+  } finally {
+    isLoadingMore = false;
+    hideScrollLoader();
   }
 }
 
 // Recherche
-async function performSearch(query) {
+async function performSearch(query, page = 1) {
   clearHistoryBtnWrapper.style.display = 'none';
-  showLoader();
+  if (page === 1) showLoader();
   sectionTitle.textContent = `Résultats pour "${query}"`;
   try {
-    const data = await fetchTMDB('/search/multi', { query });
-    let items = (data.results || []).filter(item => 
+    const data = await fetchTMDB('/search/multi', { query, page });
+    totalPages = data.total_pages || 1;
+    let items = (data.results || []).filter(item =>
       (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path
     );
 
@@ -376,15 +469,24 @@ async function performSearch(query) {
       items = items.filter(i => i.media_type === 'tv');
     }
 
-    resultsCount.textContent = `${items.length} résultats`;
     if (items.length > 0) {
-      heroSection.style.display = 'none';
-      renderGrid(items);
-    } else {
+      if (page === 1) {
+        heroSection.style.display = 'none';
+        mediaGrid.innerHTML = '';
+        mediaGrid.style.display = 'grid';
+        statusMessage.style.display = 'none';
+      }
+      appendCards(items);
+      resultsCount.textContent = `${data.total_results || items.length} résultats`;
+      updateLoadMoreBtn();
+    } else if (page === 1) {
       showEmpty(`Aucun résultat pour "${query}".`);
     }
   } catch (err) {
     showError(err.message);
+  } finally {
+    isLoadingMore = false;
+    hideScrollLoader();
   }
 }
 
@@ -413,10 +515,12 @@ function renderHero(item) {
 }
 
 // Rendu standard de la grille
-function renderGrid(items, mode = 'standard') {
+function appendCards(items) { renderGrid(items, 'standard', true); }
+
+function renderGrid(items, mode = 'standard', append = false) {
   statusMessage.style.display = 'none';
   mediaGrid.style.display = 'grid';
-  mediaGrid.innerHTML = '';
+  if (!append) mediaGrid.innerHTML = '';
 
   items.forEach(item => {
     const isMovie = isMovieMedia(item);
