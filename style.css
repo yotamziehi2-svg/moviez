@@ -1,5 +1,5 @@
 /* =========================================================================
-   ZETFLIX - STYLES OFFICIELS INSPIRÉS DE NETFLIX (DARK THEME ÉPURÉ & MODERNE)
+   ZETFLIX - STYLES OFFICIELS INSPIRÉS DE NETFLIX (DESIGN ARRONDIS & MODERNE)
    ========================================================================= */
 
 :root {
@@ -14,7 +14,13 @@
   --netflix-green: #46d369;
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --nav-height: 68px;
-  --mobile-nav-height: 60px;
+  --mobile-nav-height: 64px;
+
+  /* Rayons d'arrondis harmonieux */
+  --radius-pill: 9999px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
 }
 
 *, *::before, *::after {
@@ -77,7 +83,7 @@ body.zetflix-body {
 .nav-menu {
   display: flex;
   list-style: none;
-  gap: 20px;
+  gap: 12px;
 }
 
 .menu-item {
@@ -85,39 +91,45 @@ body.zetflix-body {
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
-  transition: color 0.3s;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  transition: all 0.25s ease;
 }
 
 .menu-item:hover {
-  color: #b3b3b3;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .menu-item.active {
   color: #ffffff;
   font-weight: 700;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
 }
 
-/* Search widget expandable */
+/* Search widget expandable arrondi */
 .search-widget {
   display: flex;
   align-items: center;
   position: relative;
   background: transparent;
   border: 1px solid transparent;
-  padding: 4px 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
   transition: all 0.3s ease;
 }
 
 .search-widget.active {
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  width: 260px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  width: 270px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
 .search-btn {
@@ -128,6 +140,9 @@ body.zetflix-body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
 }
 
 .search-btn svg, .icon-nav-btn svg {
@@ -169,39 +184,49 @@ body.zetflix-body {
 }
 
 .icon-nav-btn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.08);
   border: none;
   color: #fff;
   cursor: pointer;
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.icon-nav-btn:hover {
+  background-color: rgba(255, 255, 255, 0.18);
 }
 
 .notif-badge {
   position: absolute;
-  top: -4px;
-  right: -6px;
+  top: 2px;
+  right: 2px;
   background-color: var(--netflix-red);
   color: #fff;
   font-size: 0.65rem;
   font-weight: 800;
-  padding: 1px 5px;
-  border-radius: 10px;
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
 }
 
 .notif-dropdown {
   position: absolute;
-  top: 36px;
+  top: 48px;
   right: 0;
   width: 320px;
-  background: rgba(0, 0, 0, 0.95);
+  background: rgba(20, 20, 20, 0.98);
   border: 1px solid var(--netflix-border);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   display: none;
   flex-direction: column;
   z-index: 110;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.85);
+  overflow: hidden;
 }
 
 .notif-dropdown.active {
@@ -212,7 +237,7 @@ body.zetflix-body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--netflix-border);
   font-size: 0.85rem;
   font-weight: 700;
@@ -225,35 +250,41 @@ body.zetflix-body {
   cursor: pointer;
   font-size: 0.75rem;
   font-weight: 600;
+  border-radius: var(--radius-pill);
+  padding: 4px 8px;
+}
+
+.link-action:hover {
+  background-color: rgba(229, 9, 20, 0.1);
 }
 
 .notif-list {
   max-height: 300px;
   overflow-y: auto;
-  padding: 8px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .notif-item {
   display: flex;
-  gap: 10px;
-  padding: 6px;
-  border-radius: 4px;
+  gap: 12px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .notif-item:hover {
-  background: #222;
+  background: #242424;
 }
 
 .notif-item img {
   width: 44px;
   height: 64px;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .notif-item-info {
@@ -281,14 +312,16 @@ body.zetflix-body {
 .profile-avatar {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-pill);
 }
 
 .profile-avatar img {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
 }
 
 .dropdown-caret {
@@ -299,17 +332,18 @@ body.zetflix-body {
 
 .profile-dropdown {
   position: absolute;
-  top: 42px;
+  top: 48px;
   right: 0;
-  width: 240px;
-  background: rgba(0, 0, 0, 0.95);
+  width: 250px;
+  background: rgba(20, 20, 20, 0.98);
   border: 1px solid var(--netflix-border);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   display: none;
   flex-direction: column;
   padding: 10px 0;
   z-index: 110;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.85);
+  overflow: hidden;
 }
 
 .profile-dropdown.active {
@@ -319,14 +353,14 @@ body.zetflix-body {
 .profile-summary {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 16px;
+  gap: 12px;
+  padding: 10px 16px;
 }
 
 .profile-summary img {
-  width: 34px;
-  height: 34px;
-  border-radius: 4px;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
 }
 
 .profile-name {
@@ -350,33 +384,38 @@ body.zetflix-body {
   border: none;
   color: #ffffff;
   padding: 10px 16px;
+  margin: 0 6px;
+  border-radius: var(--radius-sm);
   text-align: left;
   font-size: 0.85rem;
   cursor: pointer;
   transition: background 0.2s;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .dropdown-link:hover {
-  background: #222;
+  background: #2a2a2a;
 }
 
 /* ===================== MOBILE BOTTOM NAV ===================== */
 .zetflix-mobile-nav {
   display: none;
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 12px;
+  left: 16px;
+  right: 16px;
   height: var(--mobile-nav-height);
-  background-color: #121212;
-  border-top: 1px solid #222;
+  background-color: rgba(24, 24, 24, 0.92);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
   z-index: 100;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding: 0 12px;
   justify-content: space-around;
   align-items: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
 }
 
 .mob-nav-btn {
@@ -388,26 +427,29 @@ body.zetflix-body {
   align-items: center;
   gap: 3px;
   font-size: 0.68rem;
-  font-weight: 500;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
 .mob-nav-btn svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .mob-nav-btn.active {
   color: #fff;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .mob-badge {
   background: var(--netflix-red);
   color: #fff;
   font-size: 0.6rem;
-  padding: 1px 4px;
-  border-radius: 8px;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
   margin-left: 2px;
 }
 
@@ -420,8 +462,10 @@ body.zetflix-body {
   display: flex;
   align-items: center;
   padding: 0 4%;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   overflow: hidden;
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
 }
 
 .billboard-backdrop {
@@ -466,10 +510,13 @@ body.zetflix-body {
 }
 
 .billboard-type {
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   letter-spacing: 2px;
   color: #e5e5e5;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
 }
 
 .billboard-title {
@@ -496,8 +543,8 @@ body.zetflix-body {
 
 .age-rating, .hd-badge {
   border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 1px 6px;
-  border-radius: 2px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -520,7 +567,7 @@ body.zetflix-body {
   gap: 12px;
 }
 
-/* Boutons Netflix */
+/* Boutons Netflix Arrondis */
 .btn-netflix-play {
   background-color: #ffffff;
   color: #000000;
@@ -528,17 +575,19 @@ body.zetflix-body {
   font-family: inherit;
   font-weight: 700;
   font-size: 1.05rem;
-  padding: 10px 24px;
-  border-radius: 4px;
+  padding: 12px 26px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(255,255,255,0.2);
 }
 
 .btn-netflix-play:hover {
-  background-color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(255, 255, 255, 0.85);
+  transform: translateY(-2px);
 }
 
 .btn-netflix-play svg {
@@ -547,24 +596,25 @@ body.zetflix-body {
 }
 
 .btn-netflix-info {
-  background-color: rgba(109, 109, 110, 0.7);
+  background-color: rgba(109, 109, 110, 0.65);
   color: #ffffff;
   border: none;
   font-family: inherit;
   font-weight: 700;
   font-size: 1.05rem;
-  padding: 10px 24px;
-  border-radius: 4px;
+  padding: 12px 26px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
-  backdrop-filter: blur(4px);
-  transition: background-color 0.2s;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
 }
 
 .btn-netflix-info:hover {
   background-color: rgba(109, 109, 110, 0.4);
+  transform: translateY(-2px);
 }
 
 .btn-netflix-info svg {
@@ -573,24 +623,25 @@ body.zetflix-body {
 }
 
 .btn-netflix-circle {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.6);
   background-color: rgba(42, 42, 42, 0.6);
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 300;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn-netflix-circle:hover {
   border-color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: scale(1.06);
 }
 
 /* ===================== CONTENEUR PRINCIPAL & RANGÉES ===================== */
@@ -601,7 +652,7 @@ body.zetflix-body {
 }
 
 .filter-header {
-  padding: 20px 0 16px;
+  padding: 24px 0 16px;
   display: flex;
   align-items: baseline;
   gap: 12px;
@@ -648,11 +699,11 @@ body.zetflix-body {
 
 .row-cards-track {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
-  padding: 10px 0;
+  padding: 12px 4px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -660,28 +711,30 @@ body.zetflix-body {
   display: none;
 }
 
-/* Cartes médias (Format 16:9 paysage OU 2:3 vertical) */
+/* Cartes médias aux angles arrondis */
 .netflix-card {
   flex: 0 0 200px;
   position: relative;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   cursor: pointer;
   background: var(--netflix-card-bg);
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), z-index 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.35s ease, z-index 0.35s;
 }
 
 .netflix-card:hover {
-  transform: scale(1.08) translateY(-4px);
+  transform: scale(1.08) translateY(-6px);
   z-index: 10;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.85);
 }
 
 .card-img-wrap {
   width: 100%;
-  padding-top: 145%; /* Affiche verticale style Netflix */
+  padding-top: 145%;
   position: relative;
   background-color: #222;
+  overflow: hidden;
 }
 
 .card-img-wrap img {
@@ -691,28 +744,34 @@ body.zetflix-body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.netflix-card:hover .card-img-wrap img {
+  transform: scale(1.05);
 }
 
 .card-badge-top {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 8px;
+  left: 8px;
   background-color: var(--netflix-red);
   color: #fff;
   font-size: 0.65rem;
   font-weight: 800;
-  padding: 2px 5px;
-  border-radius: 2px;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
   text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 
 .card-bottom-info {
-  padding: 8px 10px;
+  padding: 10px 12px;
   background-color: var(--netflix-card-bg);
 }
 
 .card-title {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
@@ -748,13 +807,13 @@ body.zetflix-body {
   font-family: 'Impact', sans-serif, var(--font-family);
 }
 
-/* Flèches de carrousel */
+/* Flèches de carrousel arrondies */
 .slider-arrow {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 4%;
-  background: rgba(20, 20, 20, 0.7);
+  width: 44px;
+  background: rgba(20, 20, 20, 0.75);
   border: none;
   color: #fff;
   font-size: 2.2rem;
@@ -764,7 +823,9 @@ body.zetflix-body {
   cursor: pointer;
   z-index: 15;
   opacity: 0;
-  transition: opacity 0.2s, background-color 0.2s;
+  border-radius: var(--radius-md);
+  margin: 12px 0;
+  transition: opacity 0.2s, background-color 0.2s, transform 0.2s;
 }
 
 .netflix-row:hover .slider-arrow {
@@ -772,15 +833,16 @@ body.zetflix-body {
 }
 
 .slider-arrow:hover {
-  background: rgba(20, 20, 20, 0.9);
+  background: rgba(20, 20, 20, 0.95);
+  transform: scale(1.05);
 }
 
 .slider-arrow.left {
-  left: 0;
+  left: -10px;
 }
 
 .slider-arrow.right {
-  right: 0;
+  right: -10px;
 }
 
 /* ===================== GRILLE STANDARD (FILMS / SERIES) ===================== */
@@ -814,8 +876,8 @@ body.zetflix-body {
 .modal-backdrop {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(8px);
 }
 
 .preview-dialog {
@@ -826,9 +888,10 @@ body.zetflix-body {
   max-height: 90vh;
   overflow-y: auto;
   background-color: var(--netflix-card-bg);
-  border-radius: 8px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
   animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
 .simple-modal-dialog {
@@ -837,9 +900,9 @@ body.zetflix-body {
   width: 100%;
   max-width: 500px;
   background-color: var(--netflix-card-bg);
-  border-radius: 8px;
-  padding: 28px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.9);
 }
 
 @keyframes modalFadeIn {
@@ -849,32 +912,33 @@ body.zetflix-body {
 
 .modal-close-round {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 36px;
-  height: 36px;
-  background-color: rgba(24, 24, 24, 0.8);
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(24, 24, 24, 0.85);
   border: 2px solid rgba(255, 255, 255, 0.4);
   color: #fff;
   border-radius: 50%;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .modal-close-round:hover {
   background-color: #ffffff;
   color: #000;
+  transform: scale(1.05);
 }
 
 .preview-hero {
   position: relative;
-  height: 360px;
+  height: 380px;
   background-color: #000;
 }
 
@@ -887,7 +951,7 @@ body.zetflix-body {
 .preview-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 50%, var(--netflix-card-bg) 100%);
+  background: linear-gradient(180deg, transparent 40%, var(--netflix-card-bg) 100%);
 }
 
 .preview-hero-content {
@@ -899,7 +963,7 @@ body.zetflix-body {
 }
 
 .preview-hero-content h2 {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 900;
   margin-bottom: 14px;
   text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
@@ -963,29 +1027,37 @@ body.zetflix-body {
 }
 
 .player-topbar {
-  height: 60px;
+  height: 64px;
   background: rgba(10, 10, 10, 0.95);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 24px;
   border-bottom: 1px solid #222;
-  gap: 14px;
+  gap: 16px;
 }
 
 .player-back-btn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 6px;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.player-back-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .player-back-btn svg {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
 .player-info-title {
@@ -1004,8 +1076,9 @@ body.zetflix-body {
   background-color: var(--netflix-red);
   color: #fff;
   font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 2px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
 }
 
 .player-topbar-actions {
@@ -1023,15 +1096,16 @@ body.zetflix-body {
 }
 
 .netflix-select {
-  background-color: #222;
+  background-color: #242424;
   border: 1px solid #444;
   color: #fff;
-  padding: 5px 10px;
-  border-radius: 4px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
   font-family: inherit;
   font-size: 0.82rem;
   outline: none;
   cursor: pointer;
+  transition: border-color 0.2s;
 }
 
 .netflix-select:focus {
@@ -1047,12 +1121,12 @@ body.zetflix-body {
   background: transparent;
   border: 1px solid #555;
   color: #fff;
-  padding: 5px 12px;
-  border-radius: 4px;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 600;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition: all 0.2s;
 }
 
 .btn-netflix-check.active {
@@ -1114,15 +1188,15 @@ body.zetflix-body {
 
 .stats-row {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   margin-bottom: 24px;
 }
 
 .stat-box {
   flex: 1;
-  background-color: #222;
-  border-radius: 6px;
-  padding: 14px;
+  background-color: #242424;
+  border-radius: var(--radius-md);
+  padding: 16px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -1130,7 +1204,7 @@ body.zetflix-body {
 }
 
 .stat-number {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 900;
   color: var(--netflix-red);
 }
@@ -1164,11 +1238,11 @@ body.zetflix-body {
 
 .netflix-input {
   width: 100%;
-  background-color: #222;
+  background-color: #242424;
   border: 1px solid #444;
   color: #fff;
-  padding: 10px 14px;
-  border-radius: 4px;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
   font-family: inherit;
   font-size: 0.9rem;
   outline: none;
@@ -1178,12 +1252,12 @@ body.zetflix-body {
   border-color: var(--netflix-red);
 }
 
-/* TV Option Card */
+/* TV Option Card Arrondie */
 .tv-option-card {
   display: flex;
   gap: 14px;
-  background-color: #222;
-  border-radius: 6px;
+  background-color: #242424;
+  border-radius: var(--radius-md);
   padding: 16px;
   margin-bottom: 12px;
 }
@@ -1210,9 +1284,9 @@ body.zetflix-body {
   align-items: center;
   gap: 10px;
   margin-top: 8px;
-  background-color: #111;
-  padding: 6px 10px;
-  border-radius: 4px;
+  background-color: #161616;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
   width: fit-content;
 }
 
@@ -1222,7 +1296,7 @@ body.zetflix-body {
 }
 
 .btn-sm {
-  padding: 4px 10px;
+  padding: 4px 12px;
   font-size: 0.8rem;
 }
 
@@ -1259,7 +1333,7 @@ body.zetflix-body {
     display: flex;
   }
   body.zetflix-body {
-    padding-bottom: var(--mobile-nav-height);
+    padding-bottom: 80px;
   }
   .billboard-hero {
     height: 65vh;
@@ -1283,6 +1357,7 @@ body.zetflix-body {
   }
   .netflix-card {
     flex: 0 0 135px;
+    border-radius: var(--radius-sm);
   }
   .netflix-card.is-top10 {
     flex: 0 0 120px;
@@ -1298,7 +1373,7 @@ body.zetflix-body {
   .player-topbar {
     flex-wrap: wrap;
     height: auto;
-    padding: 10px;
+    padding: 10px 16px;
   }
   .player-topbar-actions {
     flex-wrap: wrap;
