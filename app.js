@@ -20,15 +20,15 @@ let recentSearches = JSON.parse(localStorage.getItem('moviez_recent_searches') |
 let currentPage  = 1;
 let totalPages   = 1;
 let isLoadingMore = false;
-let heroItems    = [];
-let heroIndex    = 0;
-let heroCycleTimer = null;
 
 // Hover trailer
 let hoverTimer = null;
 let activeTrailerCard = null;
 
-// ===================== CAROUSEL ROWS =====================
+// ===================== FEATURED (Netflix style) =====================
+let featuredItems = [];
+let featuredIndex = 0;
+let featuredCycleTimer = null;
 const CAROUSEL_ROWS = [
   { title: '🔥 Tendances du moment', endpoint: '/trending/all/day', top10: true },
   { title: '🎬 En ce moment au cinéma', endpoint: '/movie/now_playing' },
@@ -377,7 +377,7 @@ async function loadContent(page = 1) {
   const catalogContainer = document.getElementById('catalogContainer');
   const catalogHeader    = document.getElementById('catalogHeader');
   const mediaGrid        = document.getElementById('mediaGrid');
-  const heroSection      = document.getElementById('heroSection');
+  const featuredSection  = document.getElementById('featuredSection');
   const genreSection     = document.getElementById('genreSection');
   const statusMessage    = document.getElementById('statusMessage');
 
@@ -401,7 +401,7 @@ async function loadContent(page = 1) {
   }
 
   if (page === 1) {
-    heroSection.style.display = 'none';
+    if (featuredSection) featuredSection.style.display = 'none';
     mediaGrid.innerHTML = '';
     catalogHeader.style.display = 'flex';
     document.getElementById('clearHistoryBtnWrapper').style.display = 'none';
@@ -443,10 +443,10 @@ async function loadContent(page = 1) {
 
 // ===================== CAROUSELS =====================
 async function buildCarousels() {
-  stopHeroCycle();
+  stopFeaturedCycle();
   const catalogContainer = document.getElementById('catalogContainer');
   const statusMessage    = document.getElementById('statusMessage');
-  const heroSection      = document.getElementById('heroSection');
+  const featuredSection  = document.getElementById('featuredSection');
 
   const responses = await Promise.allSettled(
     CAROUSEL_ROWS.map(r => fetchTMDB(r.endpoint, r.params || {}))
@@ -456,15 +456,15 @@ async function buildCarousels() {
   catalogContainer.innerHTML = '';
   statusMessage.style.display = 'none';
   let count = 0;
-  heroItems = [];
+  featuredItems = [];
 
   responses.forEach((resp, idx) => {
     if (resp.status !== 'fulfilled') return;
     const items = (resp.value.results || []).filter(i => i.poster_path && (i.title || i.name));
     if (!items.length) return;
 
-    // Collect hero candidates from first row
-    if (idx === 0) heroItems = items.slice(0, 8);
+    // Collect candidates for the Netflix featured layout
+    if (idx === 0) featuredItems = items.slice(0, 5);
 
     const row   = document.createElement('section');
     row.className = 'carousel-row';
@@ -501,72 +501,113 @@ async function buildCarousels() {
   isLoadingMore = false;
   document.getElementById('resultsCount').textContent = '';
 
-  // Start hero
-  if (heroItems.length > 0) {
-    renderHero(heroItems[0]);
-    heroSection.style.display = 'flex';
-    renderHeroDots();
-    startHeroCycle();
+  // Start featured header
+  if (featuredItems.length > 0) {
+    featuredIndex = 0;
+    renderFeatured(featuredItems[featuredIndex]);
+    renderFeaturedSideItems();
+    if (featuredSection) featuredSection.style.display = 'block';
+    startFeaturedCycle();
   }
 }
 
-// ===================== HERO =====================
-function renderHero(item) {
+// ===================== FEATURED (Netflix Style) =====================
+function renderFeatured(item) {
   const isMovie = isMovieMedia(item);
   const title   = item.name || item.title || '';
-  const backdrop = item.backdrop_path
-    ? `${IMG_ORI}${item.backdrop_path}`
-    : `${IMG_W500}${item.poster_path}`;
+  const imgUrl  = item.backdrop_path ? `${IMG_ORI}${item.backdrop_path}` : `${IMG_W500}${item.poster_path}`;
 
-  document.getElementById('heroBackdrop').style.backgroundImage = `url('${backdrop}')`;
-  document.getElementById('heroTitle').textContent = title;
-  document.getElementById('heroOverview').textContent = item.overview || '';
+  const featuredImg = document.getElementById('featuredImg');
+  const featuredTitle = document.getElementById('featuredCardTitle');
+  const featuredOverview = document.getElementById('featuredOverview');
+  const featuredMeta = document.getElementById('featuredMetaRow');
+  const featuredPlay = document.getElementById('featuredPlayBtn');
+  const featuredCardPlay = document.getElementById('featuredCardPlay');
+  const featuredWishlistBtn = document.getElementById('featuredWishlistBtn');
+  const featuredWishlistText = document.getElementById('featuredWishlistText');
+
+  if (featuredImg) featuredImg.src = imgUrl;
+  if (featuredTitle) featuredTitle.textContent = title;
+  if (featuredOverview) featuredOverview.textContent = item.overview || 'Aucun résumé disponible pour le moment.';
 
   const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
   const year   = (item.release_date || item.first_air_date || '').slice(0, 4);
-  const rank   = heroItems.indexOf(item) + 1;
+  const typeLabel = isMovie ? 'Film' : 'Série';
 
-  document.getElementById('heroMetaRow').innerHTML = [
-    rank ? `<span class="hero-rank">#${rank} aujourd'hui</span>` : '',
-    rating ? `<span class="hero-rating">★ ${rating}</span>` : '',
-    year   ? `<span class="hero-year">${year}</span>` : '',
-    `<span class="hero-type-badge">${isMovie ? 'Film' : 'Série'}</span>`,
-  ].join('');
+  if (featuredMeta) {
+    featuredMeta.innerHTML = [
+      `<span style="color:var(--text);font-weight:700;">${typeLabel}</span>`,
+      year ? `<span class="featured-meta-dot"></span><span>${year}</span>` : '',
+      rating ? `<span class="featured-meta-dot"></span><span class="featured-meta-highlight">★ ${rating}</span>` : '',
+      `<span class="featured-meta-dot"></span><span>HD</span>`
+    ].filter(Boolean).join('');
+  }
 
-  document.getElementById('heroPlayBtn').onclick = () => openPlayer({ ...item, media_type: isMovie ? 'movie' : 'tv' });
+  const playAction = () => openPlayer({ ...item, media_type: isMovie ? 'movie' : 'tv' });
+  if (featuredPlay) featuredPlay.onclick = playAction;
+  if (featuredCardPlay) featuredCardPlay.onclick = (e) => { e.stopPropagation(); playAction(); };
+  const cardWrap = document.getElementById('featuredCardWrap');
+  if (cardWrap) cardWrap.onclick = playAction;
 
   const inWish = wishlist.some(w => w.id === item.id);
-  document.getElementById('heroWishlistText').textContent = inWish ? '✓ Ma liste' : '+ Ma liste';
-  document.getElementById('heroWishlistBtn').onclick = () => {
-    toggleWishlist({ ...item, media_type: isMovie ? 'movie' : 'tv' });
-    document.getElementById('heroWishlistText').textContent =
-      wishlist.some(w => w.id === item.id) ? '✓ Ma liste' : '+ Ma liste';
-  };
+  if (featuredWishlistText) featuredWishlistText.textContent = inWish ? '✓ Dans ma liste' : '+ Ma liste';
+  if (featuredWishlistBtn) {
+    featuredWishlistBtn.onclick = () => {
+      toggleWishlist({ ...item, media_type: isMovie ? 'movie' : 'tv' });
+      const nowIn = wishlist.some(w => w.id === item.id);
+      if (featuredWishlistText) featuredWishlistText.textContent = nowIn ? '✓ Dans ma liste' : '+ Ma liste';
+    };
+  }
 }
 
-function renderHeroDots() {
-  const dotsEl = document.getElementById('heroDots');
-  dotsEl.innerHTML = heroItems.map((_, i) =>
-    `<div class="hero-dot${i === heroIndex ? ' active' : ''}" data-idx="${i}"></div>`
-  ).join('');
+function renderFeaturedSideItems() {
+  const container = document.getElementById('featuredSideCards');
+  if (!container) return;
+  container.innerHTML = '';
+
+  featuredItems.forEach((item, idx) => {
+    if (idx === featuredIndex) return; // on affiche les autres
+    const sideItem = document.createElement('div');
+    sideItem.className = 'featured-side-item';
+    const poster = item.poster_path ? `${IMG_W500}${item.poster_path}` : (item.backdrop_path ? `${IMG_W500}${item.backdrop_path}` : '');
+    const title = item.name || item.title || '';
+
+    sideItem.innerHTML = `
+      <img src="${poster}" alt="${title}" loading="lazy">
+      <div class="featured-side-item-title">${title}</div>
+    `;
+
+    sideItem.onclick = () => {
+      featuredIndex = idx;
+      renderFeatured(featuredItems[featuredIndex]);
+      renderFeaturedSideItems();
+      restartFeaturedCycle();
+    };
+
+    container.appendChild(sideItem);
+  });
 }
 
-function jumpHero(idx) {
-  heroIndex = idx;
-  renderHero(heroItems[heroIndex]);
-  renderHeroDots();
-  restartHeroCycle();
+function startFeaturedCycle() {
+  featuredCycleTimer = setInterval(() => {
+    if (!featuredItems.length) return;
+    featuredIndex = (featuredIndex + 1) % featuredItems.length;
+    renderFeatured(featuredItems[featuredIndex]);
+    renderFeaturedSideItems();
+  }, 8000);
 }
 
-function startHeroCycle() {
-  heroCycleTimer = setInterval(() => {
-    heroIndex = (heroIndex + 1) % heroItems.length;
-    renderHero(heroItems[heroIndex]);
-    renderHeroDots();
-  }, 7000);
+function stopFeaturedCycle() {
+  if (featuredCycleTimer) {
+    clearInterval(featuredCycleTimer);
+    featuredCycleTimer = null;
+  }
 }
-function stopHeroCycle() { if (heroCycleTimer) { clearInterval(heroCycleTimer); heroCycleTimer = null; } }
-function restartHeroCycle() { stopHeroCycle(); startHeroCycle(); }
+
+function restartFeaturedCycle() {
+  stopFeaturedCycle();
+  startFeaturedCycle();
+}
 
 // ===================== CARD BUILDER =====================
 function buildCard(item, rank = null) {
@@ -671,15 +712,15 @@ function renderGrid(items, mode = 'standard', append = false) {
 
 // ===================== HISTORY / WISHLIST =====================
 function renderHistory() {
-  const heroSection = document.getElementById('heroSection');
+  const featuredSection = document.getElementById('featuredSection');
   const catalogContainer = document.getElementById('catalogContainer');
   const catalogHeader = document.getElementById('catalogHeader');
   const mediaGrid = document.getElementById('mediaGrid');
   const genreSection = document.getElementById('genreSection');
   const statusMessage = document.getElementById('statusMessage');
 
-  stopHeroCycle();
-  heroSection.style.display = 'none';
+  stopFeaturedCycle();
+  if (featuredSection) featuredSection.style.display = 'none';
   catalogContainer.style.display = 'none';
   genreSection.style.display = 'none';
   catalogHeader.style.display = 'flex';
@@ -697,15 +738,15 @@ function renderHistory() {
 }
 
 function renderWishlist() {
-  const heroSection = document.getElementById('heroSection');
+  const featuredSection = document.getElementById('featuredSection');
   const catalogContainer = document.getElementById('catalogContainer');
   const catalogHeader = document.getElementById('catalogHeader');
   const mediaGrid = document.getElementById('mediaGrid');
   const genreSection = document.getElementById('genreSection');
   const statusMessage = document.getElementById('statusMessage');
 
-  stopHeroCycle();
-  heroSection.style.display = 'none';
+  stopFeaturedCycle();
+  if (featuredSection) featuredSection.style.display = 'none';
   catalogContainer.style.display = 'none';
   genreSection.style.display = 'none';
   catalogHeader.style.display = 'flex';
@@ -724,15 +765,15 @@ function renderWishlist() {
 
 // ===================== GENRE SELECTOR =====================
 function renderGenreSelector() {
-  const heroSection = document.getElementById('heroSection');
+  const featuredSection = document.getElementById('featuredSection');
   const catalogContainer = document.getElementById('catalogContainer');
   const catalogHeader = document.getElementById('catalogHeader');
   const mediaGrid = document.getElementById('mediaGrid');
   const genreSection = document.getElementById('genreSection');
   const statusMessage = document.getElementById('statusMessage');
 
-  stopHeroCycle();
-  heroSection.style.display = 'none';
+  stopFeaturedCycle();
+  if (featuredSection) featuredSection.style.display = 'none';
   catalogContainer.style.display = 'none';
   catalogHeader.style.display = 'none';
   mediaGrid.style.display = 'none';
@@ -753,17 +794,17 @@ function renderGenreSelector() {
 let activeGenre = null;
 async function loadByGenre(genre, page = 1) {
   activeGenre = genre;
-  const heroSection = document.getElementById('heroSection');
+  const featuredSection = document.getElementById('featuredSection');
   const catalogContainer = document.getElementById('catalogContainer');
   const catalogHeader = document.getElementById('catalogHeader');
   const mediaGrid = document.getElementById('mediaGrid');
   const genreSection = document.getElementById('genreSection');
 
-  stopHeroCycle();
+  stopFeaturedCycle();
   genreSection.style.display = 'none';
   catalogContainer.style.display = 'none';
   catalogHeader.style.display = 'flex';
-  heroSection.style.display = 'none';
+  if (featuredSection) featuredSection.style.display = 'none';
   document.getElementById('sectionTitle').textContent = `${genre.icon} ${genre.label}`;
 
   if (page === 1) { currentPage = 1; mediaGrid.innerHTML = ''; showLoader(); }
@@ -785,7 +826,7 @@ async function loadByGenre(genre, page = 1) {
 
 // ===================== SEARCH =====================
 async function performSearch(query, page = 1) {
-  const heroSection = document.getElementById('heroSection');
+  const featuredSection = document.getElementById('featuredSection');
   const catalogContainer = document.getElementById('catalogContainer');
   const catalogHeader = document.getElementById('catalogHeader');
   const mediaGrid = document.getElementById('mediaGrid');
@@ -793,8 +834,8 @@ async function performSearch(query, page = 1) {
   const statusMessage = document.getElementById('statusMessage');
 
   if (page === 1) {
-    stopHeroCycle();
-    heroSection.style.display = 'none';
+    stopFeaturedCycle();
+    if (featuredSection) featuredSection.style.display = 'none';
     catalogContainer.style.display = 'none';
     genreSection.style.display = 'none';
     catalogHeader.style.display = 'flex';
