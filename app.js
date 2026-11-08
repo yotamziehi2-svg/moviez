@@ -42,6 +42,26 @@ const HOMEPAGE_ROWS = [
   { title: '🇫🇷 Productions françaises incontournables', endpoint: '/discover/movie', params: { with_original_language: 'fr' } },
 ];
 
+// Catalogue des genres et humeurs (Feature 3)
+const GENRES_CATALOG = [
+  { id: 28,    label: 'Action',          icon: '🔥', type: 'movie' },
+  { id: 35,    label: 'Comédie',         icon: '😂', type: 'both'  },
+  { id: 27,    label: 'Horreur',         icon: '😱', type: 'movie' },
+  { id: 53,    label: 'Thriller',        icon: '🧠', type: 'movie' },
+  { id: 10749, label: 'Romance',         icon: '💕', type: 'both'  },
+  { id: 878,   label: 'Science-Fiction', icon: '👽', type: 'movie' },
+  { id: 18,    label: 'Drame',           icon: '🎭', type: 'both'  },
+  { id: 80,    label: 'Crime & Gangsters',icon: '🕵️', type: 'both' },
+  { id: 16,    label: 'Animation',       icon: '🧚', type: 'both'  },
+  { id: 10402, label: 'Comédie Musicale',icon: '🎶', type: 'movie' },
+  { id: 36,    label: 'Histoire & Époque',icon: '📜', type: 'movie' },
+  { id: 99,    label: 'Documentaires',   icon: '🌍', type: 'movie' },
+];
+
+// Trailer Hover State (Feature 2)
+let hoverTrailerTimer = null;
+let activeTrailerCard = null;
+
 // ===================== DOUBLE STOCKAGE LOCAL + COOKIE =====================
 const STORAGE_KEYS = {
   history: 'zetflix_history',
@@ -134,6 +154,8 @@ function restoreTab() {
     renderWishlist();
   } else if (currentTab === 'history') {
     renderHistory();
+  } else if (currentTab === 'genres') {
+    renderGenresMoodView();
   } else if (currentTab === 'series') {
     loadCategoryView('tv', 'Séries télévisées');
   } else if (currentTab === 'movies') {
@@ -486,6 +508,12 @@ function createMediaCard(item, topRank = null) {
     <div class="card-img-wrap">
       <img src="${poster}" alt="${title}" loading="lazy">
       <span class="card-badge-top">${isMov ? 'Film' : 'Série'}</span>
+      <!-- Trailer overlay au survol (Feature 2) -->
+      <div class="trailer-overlay">
+        <span class="trailer-badge-pill">Bande-annonce</span>
+        <div class="trailer-frame-box"></div>
+        <div class="trailer-gradient-bottom"></div>
+      </div>
     </div>
     <div class="card-bottom-info">
       <div class="card-title" title="${title}">${title}</div>
@@ -500,7 +528,169 @@ function createMediaCard(item, topRank = null) {
     openPreviewModal({ ...item, media_type: type });
   });
 
+  // Activer le hover trailer desktop
+  initCardTrailerHover(card, { ...item, media_type: type });
+
   return card;
+}
+
+// ===================== FEATURE 2 : BANDE-ANNONCE AU SURVOL (TRAILER HOVER) =====================
+function initCardTrailerHover(cardEl, item) {
+  if (window.matchMedia('(hover: none)').matches) return; // Désactivé sur écran tactile
+
+  cardEl.addEventListener('mouseenter', () => {
+    clearTimeout(hoverTrailerTimer);
+    hoverTrailerTimer = setTimeout(async () => {
+      const type = item.media_type || (isMovie(item) ? 'movie' : 'tv');
+      const trailerKey = await fetchTrailerKey(item.id, type);
+      if (trailerKey && cardEl.matches(':hover')) {
+        playCardTrailer(cardEl, trailerKey);
+      }
+    }, 1300); // 1.3 secondes de survol intentionnel
+  });
+
+  cardEl.addEventListener('mouseleave', () => {
+    clearTimeout(hoverTrailerTimer);
+    stopCardTrailer(cardEl);
+  });
+}
+
+async function fetchTrailerKey(id, type) {
+  const cacheKey = `zetflix_trailer_${type}_${id}`;
+  const cached = sessionStorage.getItem(cacheKey);
+  if (cached) return cached;
+
+  try {
+    // Essayer en français d'abord
+    let data = await fetchTMDB(`/${type}/${id}/videos`, { language: 'fr-FR' });
+    let trailer = (data.results || []).find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser') && v.key);
+
+    // Repli en anglais si pas de VF
+    if (!trailer) {
+      data = await fetchTMDB(`/${type}/${id}/videos`, { language: 'en-US' });
+      trailer = (data.results || []).find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser') && v.key);
+    }
+
+    if (trailer && trailer.key) {
+      sessionStorage.setItem(cacheKey, trailer.key);
+      return trailer.key;
+    }
+  } catch (e) {}
+
+  return null;
+}
+
+function playCardTrailer(cardEl, youtubeKey) {
+  if (activeTrailerCard && activeTrailerCard !== cardEl) {
+    stopCardTrailer(activeTrailerCard);
+  }
+
+  const overlay = cardEl.querySelector('.trailer-overlay');
+  const frameBox = cardEl.querySelector('.trailer-frame-box');
+  if (!overlay || !frameBox) return;
+
+  overlay.style.display = 'block';
+  frameBox.innerHTML = `
+    <iframe 
+      src="https://www.youtube-nocookie.com/embed/${youtubeKey}?autoplay=1&mute=1&controls=0&modestbranding=1&loop=1&playlist=${youtubeKey}&playsinline=1" 
+      allow="autoplay; encrypted-media" 
+      loading="lazy">
+    </iframe>
+  `;
+
+  activeTrailerCard = cardEl;
+}
+
+function stopCardTrailer(cardEl) {
+  if (!cardEl) return;
+  const overlay = cardEl.querySelector('.trailer-overlay');
+  const frameBox = cardEl.querySelector('.trailer-frame-box');
+  if (overlay) overlay.style.display = 'none';
+  if (frameBox) frameBox.innerHTML = '';
+  if (activeTrailerCard === cardEl) activeTrailerCard = null;
+}
+
+// ===================== FEATURE 3 : EXPLORATION PAR GENRE & AMBIANCE =====================
+function renderGenresMoodView() {
+  stopBillboardCycle();
+  document.getElementById('billboardHero').style.display = 'none';
+  document.getElementById('rowsContainer').style.display = 'none';
+  document.getElementById('gridContainer').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('filterHeader').style.display = 'none';
+
+  const section = document.getElementById('genreMoodSection');
+  const grid = document.getElementById('genreBubblesGrid');
+  section.style.display = 'block';
+  grid.innerHTML = '';
+
+  GENRES_CATALOG.forEach(genre => {
+    const btn = document.createElement('button');
+    btn.className = 'genre-bubble-btn';
+    btn.innerHTML = `
+      <span class="genre-bubble-icon">${genre.icon}</span>
+      <span class="genre-bubble-label">${genre.label}</span>
+    `;
+    btn.onclick = () => loadByGenreDiscover(genre);
+    grid.appendChild(btn);
+  });
+
+  const surpriseBtn = document.getElementById('surpriseMoodBtn');
+  surpriseBtn.onclick = () => {
+    const randomGenre = GENRES_CATALOG[Math.floor(Math.random() * GENRES_CATALOG.length)];
+    loadByGenreDiscover(randomGenre);
+  };
+}
+
+let activeDiscoveredGenre = null;
+async function loadByGenreDiscover(genre, page = 1) {
+  activeDiscoveredGenre = genre;
+  document.getElementById('genreMoodSection').style.display = 'none';
+  document.getElementById('rowsContainer').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+
+  const filterHeader = document.getElementById('filterHeader');
+  const gridContainer = document.getElementById('gridContainer');
+  filterHeader.style.display = 'flex';
+  document.getElementById('filterTitle').textContent = `${genre.icon} ${genre.label}`;
+
+  if (page === 1) {
+    gridContainer.style.display = 'grid';
+    gridContainer.innerHTML = '';
+    showPageLoader();
+  }
+
+  try {
+    const type = genre.type === 'tv' ? 'tv' : 'movie';
+    const data = await fetchTMDB(`/discover/${type}`, {
+      with_genres: genre.id,
+      sort_by: 'vote_average.desc',
+      'vote_count.gte': 300,
+      page
+    });
+
+    totalPages = data.total_pages || 1;
+    const items = (data.results || []).filter(item => item.poster_path).map(item => ({ ...item, media_type: type }));
+
+    hidePageLoader();
+    if (items.length > 0) {
+      document.getElementById('filterCount').textContent = `${data.total_results || items.length} titres recommandés`;
+      items.forEach(item => {
+        gridContainer.appendChild(createMediaCard(item));
+      });
+      setupInfiniteScroll(() => {
+        if (currentPage < totalPages && activeDiscoveredGenre === genre) {
+          currentPage++;
+          loadByGenreDiscover(genre, currentPage);
+        }
+      });
+    } else if (page === 1) {
+      showEmptyView('🍿', 'Aucun film trouvé dans cette catégorie.');
+    }
+  } catch (err) {
+    hidePageLoader();
+    showEmptyView('⚠️', 'Erreur lors du chargement des films de cette catégorie.');
+  }
 }
 
 // ===================== VUES CATÉGORIES (FILMS, SÉRIES, TOP) =====================

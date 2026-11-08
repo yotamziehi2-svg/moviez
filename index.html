@@ -21,6 +21,7 @@
         <li class="menu-item active" data-tab="home">Accueil</li>
         <li class="menu-item" data-tab="series">Séries</li>
         <li class="menu-item" data-tab="movies">Films</li>
+        <li class="menu-item" data-tab="genres">Catégories & Genres</li>
         <li class="menu-item" data-tab="top">Nouveautés les plus regardées</li>
         <li class="menu-item" data-tab="wishlist">Ma liste</li>
         <li class="menu-item" data-tab="history">Historique</li>
@@ -91,6 +92,10 @@
       <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z" fill="currentColor"/></svg>
       <span>Films</span>
     </button>
+    <button class="mob-nav-btn" data-tab="genres">
+      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+      <span>Genres</span>
+    </button>
     <button class="mob-nav-btn" data-tab="wishlist">
       <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg>
       <span>Ma liste <span id="mobWishlistCount" class="mob-badge" style="display:none">0</span></span>
@@ -142,6 +147,18 @@
       <h2 id="filterTitle">Films</h2>
       <span class="filter-count" id="filterCount"></span>
     </div>
+
+    <!-- Genre Selector Section (Feature 3) -->
+    <section class="genre-mood-section" id="genreMoodSection" style="display:none">
+      <div class="genre-mood-header">
+        <h2>Qu'est-ce qu'on regarde ce soir ?</h2>
+        <p>Sélectionnez une ambiance ou laissez Zetflix décider pour vous.</p>
+        <button class="btn-netflix-play btn-surprise" id="surpriseMoodBtn">
+          🎲 Surprends-moi !
+        </button>
+      </div>
+      <div class="genre-bubbles-grid" id="genreBubblesGrid"></div>
+    </section>
 
     <!-- Rows container (Homepage rows) -->
     <div class="rows-container" id="rowsContainer"></div>
@@ -344,6 +361,7 @@
 
   <!-- Scripts -->
   <script src="config.js?v=zetflix-1"></script>
-  <script src="app.js?v=zetflix-1"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="app.js?v=zetflix-v3"></script>
 </body>
 </html>
