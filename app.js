@@ -1106,7 +1106,7 @@ function hideTrailer(card) {
 function showLoader() {
   const sm = document.getElementById('statusMessage');
   const mg = document.getElementById('mediaGrid');
-  sm.innerHTML = '<div class="spinner" style="margin:0 auto"></div>';
+  sm.innerHTML = '<div class="spinner" style="margin:0 auto;width:36px;height:36px;flex-shrink:0"></div>';
   sm.style.display = 'block'; mg.style.display = 'none';
 }
 function showEmpty(msg) {

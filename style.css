@@ -735,7 +735,16 @@ svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; 
 .scroll-loading .spinner { width: 22px; height: 22px; border-width: 2px; }
 
 /* ===================== STATUS / EMPTY ===================== */
-.status-message { text-align: center; padding: 60px 20px; color: var(--muted); }
+.status-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
 .empty-state-box {
   max-width: 440px;
   margin: 0 auto;
