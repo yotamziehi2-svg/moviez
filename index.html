@@ -3,308 +3,347 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>MovieZ</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <title>Zetflix - Regarder des séries et films en streaming</title>
+  <link rel="stylesheet" href="style.css?v=zetflix-1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Netflix+Sans:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="zetflix-body">
 
-  <!-- ===== NAVBAR ===== -->
-  <header class="navbar" id="navbar">
-    <div class="nav-logo" id="brandLogo">
-      <span class="logo-m">Z</span>
+  <!-- ===================== NETFLIX NAVBAR ===================== -->
+  <header class="zetflix-nav" id="mainNav">
+    <div class="nav-left">
+      <a href="#" class="brand-logo" id="brandLogo">
+        <span class="logo-z">ZETFLIX</span>
+      </a>
+      <ul class="nav-menu">
+        <li class="menu-item active" data-tab="home">Accueil</li>
+        <li class="menu-item" data-tab="series">Séries</li>
+        <li class="menu-item" data-tab="movies">Films</li>
+        <li class="menu-item" data-tab="top">Nouveautés les plus regardées</li>
+        <li class="menu-item" data-tab="wishlist">Ma liste</li>
+        <li class="menu-item" data-tab="history">Historique</li>
+      </ul>
     </div>
-    <nav class="nav-links">
-      <button class="nav-btn active" data-filter="all">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span>Accueil</span>
-      </button>
-      <button class="nav-btn" data-filter="movie">
-        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
-        <span>Films</span>
-      </button>
-      <button class="nav-btn" data-filter="tv">
-        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
-        <span>Séries</span>
-      </button>
-      <button class="nav-btn" data-filter="genres">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        <span>Genres</span>
-      </button>
-    </nav>
-    <div class="nav-actions">
-      <button id="searchToggleBtn" class="nav-icon-btn" title="Rechercher">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
-      <button id="openSettingsBtn" class="nav-icon-btn" title="Mon compte">
-        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </button>
+
+    <div class="nav-right">
+      <!-- Search Box expandable -->
+      <div class="search-widget" id="searchWidget">
+        <button class="search-btn" id="searchToggle" title="Rechercher">
+          <svg viewBox="0 0 24 24"><path d="M21.71 20.29l-5.4-5.4A8 8 0 1 0 10 16a7.93 7.93 0 0 0 4.89-1.69l5.4 5.4a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42zM4 10a6 6 0 1 1 6 6 6 6 0 0 1-6-6z" fill="currentColor"/></svg>
+        </button>
+        <input type="text" id="searchInput" class="search-input" placeholder="Titres, personnes, genres..." autocomplete="off">
+        <button class="clear-search-btn" id="clearSearch" style="display:none">&times;</button>
+      </div>
+
+      <!-- Notifications -->
+      <div class="notifications-wrapper" id="notifWrapper">
+        <button class="icon-nav-btn" id="notifBtn" title="Notifications">
+          <svg viewBox="0 0 24 24"><path d="M12 22a2.98 2.98 0 0 0 2.82-2H9.18A2.98 2.98 0 0 0 12 22zm7-6v-5c0-3.07-1.64-5.64-4.5-6.32V4a2.5 2.5 0 0 0-5 0v.68C6.63 5.36 5 7.92 5 11v5l-2 2v1h18v-1l-2-2z" fill="currentColor"/></svg>
+          <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+        </button>
+        <div class="notif-dropdown" id="notifDropdown">
+          <div class="notif-dropdown-header">
+            <span>Dernières sorties</span>
+            <button id="enableNotifBtn" class="link-action">Activer alertes</button>
+          </div>
+          <div class="notif-list" id="notifList">
+            <p class="empty-text">Aucune nouvelle sortie pour le moment.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile / Settings Avatar -->
+      <div class="profile-menu-wrapper" id="profileWrapper">
+        <div class="profile-avatar" id="profileBtn" title="Compte">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" alt="Profil">
+          <span class="dropdown-caret">▾</span>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="profile-summary">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" alt="Avatar">
+            <div>
+              <div class="profile-name">Membre Zetflix</div>
+              <div class="profile-sub" id="profileStatsCount">0 vus · 0 en liste</div>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-link" id="settingsDataBtn">⚙️ Sauvegarde & Données</button>
+          <button class="dropdown-link" id="castTvBtn">📺 Regarder sur Smart TV</button>
+          <button class="dropdown-link" id="changeApiBtn">🔑 Modifier Clé TMDB</button>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- ===== BOTTOM NAV (mobile) ===== -->
-  <nav class="bottom-nav" id="bottomNav">
-    <button class="bnav-btn active" data-filter="all">
-      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  <!-- ===================== BOTTOM NAVIGATION (MOBILE) ===================== -->
+  <nav class="zetflix-mobile-nav" id="mobileNav">
+    <button class="mob-nav-btn active" data-tab="home">
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/></svg>
       <span>Accueil</span>
     </button>
-    <button class="bnav-btn" data-filter="movie">
-      <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
-      <span>Films</span>
-    </button>
-    <button class="bnav-btn" data-filter="tv">
-      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+    <button class="mob-nav-btn" data-tab="series">
+      <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z" fill="currentColor"/></svg>
       <span>Séries</span>
     </button>
-    <button class="bnav-btn" data-filter="history">
-      <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      <span>Reprendre <span id="historyBadgeCount" class="bnav-badge" style="display:none">0</span></span>
+    <button class="mob-nav-btn" data-tab="movies">
+      <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z" fill="currentColor"/></svg>
+      <span>Films</span>
     </button>
-    <button class="bnav-btn" data-filter="wishlist">
-      <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-      <span>Ma Liste <span id="wishlistBadgeCount" class="bnav-badge" style="display:none">0</span></span>
+    <button class="mob-nav-btn" data-tab="wishlist">
+      <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg>
+      <span>Ma liste <span id="mobWishlistCount" class="mob-badge" style="display:none">0</span></span>
+    </button>
+    <button class="mob-nav-btn" data-tab="history">
+      <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7a6.97 6.97 0 0 1-5.1-2.21l-1.42 1.42A8.96 8.96 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" fill="currentColor"/></svg>
+      <span>Historique</span>
     </button>
   </nav>
 
-  <!-- ===== SEARCH OVERLAY ===== -->
-  <div id="searchOverlay" class="search-overlay">
-    <div class="search-overlay-inner">
-      <div class="search-bar-row">
-        <svg class="search-bar-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="Films, séries, anime..." autocomplete="off" autocorrect="off" spellcheck="false">
-        <button id="clearSearch" class="search-clear-btn" style="display:none">×</button>
-        <button id="searchCloseBtn" class="search-cancel-btn">Annuler</button>
+  <!-- ===================== BILLBOARD HERO (NETFLIX BANNER) ===================== -->
+  <section class="billboard-hero" id="billboardHero">
+    <div class="billboard-backdrop" id="heroBackdrop"></div>
+    <div class="billboard-vignette"></div>
+    <div class="billboard-content">
+      <div class="billboard-badge-row">
+        <span class="zetflix-n-logo">Z</span>
+        <span class="billboard-type" id="heroTypeBadge">FILM</span>
       </div>
-      <div class="search-filters">
-        <button class="sf-btn active" data-sf="all">Tous</button>
-        <button class="sf-btn" data-sf="movie">Films</button>
-        <button class="sf-btn" data-sf="tv">Séries</button>
+      <h1 class="billboard-title" id="heroTitle">Chargement...</h1>
+      <div class="billboard-meta-row" id="heroMetaRow">
+        <span class="match-score">Recommandé à 98%</span>
+        <span class="hero-year" id="heroYear">2026</span>
+        <span class="age-rating">16+</span>
+        <span class="hd-badge">Ultra HD 4K</span>
       </div>
-      <div id="recentSearches" class="recent-searches">
-        <div class="recent-header">
-          <span>Recherches récentes</span>
-          <button id="clearRecentBtn" class="link-btn">Effacer</button>
-        </div>
-        <div id="recentList" class="recent-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== FEATURED SECTION (Netflix style) ===== -->
-  <section id="featuredSection" class="featured-section" style="display:none">
-    <p class="featured-label" id="featuredLabel">🔥 Tendances du moment</p>
-    <div class="featured-layout">
-      <div class="featured-card-wrap" id="featuredCardWrap">
-        <img id="featuredImg" src="" alt="" loading="lazy">
-        <div class="featured-card-gradient"></div>
-        <div class="featured-card-title" id="featuredCardTitle"></div>
-        <button class="featured-card-play" id="featuredCardPlay">
-          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></svg>
+      <p class="billboard-synopsis" id="heroSynopsis"></p>
+      <div class="billboard-links">
+        <button class="btn-netflix-play" id="heroPlayBtn">
+          <svg viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z" fill="currentColor"/></svg>
+          <span>Lecture</span>
         </button>
-      </div>
-      <div class="featured-side-cards" id="featuredSideCards"></div>
-    </div>
-    <div class="featured-info">
-      <div class="featured-meta-row" id="featuredMetaRow"></div>
-      <p class="featured-overview" id="featuredOverview"></p>
-      <div class="featured-actions">
-        <button class="btn btn-play" id="featuredPlayBtn">
-          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></svg>
-          Regarder
+        <button class="btn-netflix-info" id="heroInfoBtn">
+          <svg viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor"/></svg>
+          <span>Plus d'infos</span>
         </button>
-        <button class="btn btn-info" id="featuredWishlistBtn">
-          <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-          <span id="featuredWishlistText">+ Ma liste</span>
+        <button class="btn-netflix-circle" id="heroWishlistBtn" title="Ajouter à ma liste">
+          <span id="heroWishlistIcon">+</span>
         </button>
       </div>
     </div>
   </section>
 
-  <!-- ===== MAIN ===== -->
-  <main class="main-container">
+  <!-- ===================== MAIN CONTENT (NETFLIX ROWS) ===================== -->
+  <main class="netflix-container" id="netflixContainer">
 
-    <!-- Genre selector -->
-    <section id="genreSection" class="genre-section" style="display:none">
-      <div class="genre-intro"><h2>Qu'est-ce qu'on regarde ?</h2><p>Choisissez une ambiance ou laissez MovieZ décider.</p></div>
-      <div id="genreGrid" class="genre-grid"></div>
-      <div class="genre-surprise-row"><button id="surpriseBtn" class="btn btn-play">🎲 Surprends-moi !</button></div>
-    </section>
-
-    <!-- Carousels container (home "Tous") -->
-    <div id="catalogContainer" class="catalog-container" style="display:none"></div>
-
-    <!-- Section header (Films / Séries / Search / History / Wishlist) -->
-    <div class="section-header" id="catalogHeader" style="display:none">
-      <h2 id="sectionTitle">Tendances</h2>
-      <span id="resultsCount" class="results-count"></span>
-      <div id="clearHistoryBtnWrapper" style="display:none">
-        <button id="clearHistoryBtn" class="btn-ghost-sm">Vider</button>
-      </div>
+    <!-- Section Title when browsing a specific category / search -->
+    <div class="filter-header" id="filterHeader" style="display:none">
+      <h2 id="filterTitle">Films</h2>
+      <span class="filter-count" id="filterCount"></span>
     </div>
 
-    <!-- Media grid -->
-    <div id="mediaGrid" class="media-grid" style="display:none"></div>
+    <!-- Rows container (Homepage rows) -->
+    <div class="rows-container" id="rowsContainer"></div>
 
-    <!-- Status / empty -->
-    <div id="statusMessage" class="status-message" style="display:none"></div>
+    <!-- Grid container (when browsing Movies, Series, Wishlist, Search) -->
+    <div class="grid-container" id="gridContainer" style="display:none"></div>
 
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="empty-icon" id="emptyIcon">🍿</div>
+      <h3 id="emptyTitle">Aucun titre disponible</h3>
+      <p id="emptyDesc">Explorez nos milliers de films et séries.</p>
+      <button class="btn-netflix-play" id="emptyActionBtn" style="display:none">Explorer</button>
+    </div>
+
+    <!-- Infinite Scroll Loader -->
+    <div class="netflix-loader" id="pageLoader" style="display:none">
+      <div class="netflix-spinner"></div>
+    </div>
   </main>
 
-  <!-- ===== PLAYER MODAL ===== -->
-  <div id="playerModal" class="modal">
-    <div class="modal-backdrop" id="closeModalBackdrop"></div>
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <div class="modal-title-group">
-          <h3 id="modalMediaTitle">Titre</h3>
-          <span id="modalMediaType" class="badge">Film</span>
-          <span id="modalCurrentEpBadge" class="badge badge-accent" style="display:none"></span>
-        </div>
-        <div class="modal-header-actions">
-          <button id="modalWishlistBtn" class="icon-btn-sm" title="Ma liste">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-          </button>
-          <button id="closeModalBtn" class="modal-close">×</button>
+  <!-- ===================== NETFLIX PREVIEW MODAL (QUICK VIEW / MORE INFO) ===================== -->
+  <div class="modal-overlay" id="previewModal">
+    <div class="modal-backdrop" id="previewBackdrop"></div>
+    <div class="preview-dialog">
+      <button class="modal-close-round" id="closePreviewBtn">&times;</button>
+      <div class="preview-hero">
+        <img id="previewBackdropImg" src="" alt="Aperçu">
+        <div class="preview-gradient"></div>
+        <div class="preview-hero-content">
+          <h2 id="previewTitle">Titre</h2>
+          <div class="preview-actions">
+            <button class="btn-netflix-play" id="previewPlayBtn">
+              <svg viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z" fill="currentColor"/></svg>
+              <span>Lecture</span>
+            </button>
+            <button class="btn-netflix-circle" id="previewWishlistBtn" title="Ma liste">
+              <span id="previewWishlistIcon">+</span>
+            </button>
+          </div>
         </div>
       </div>
-      <div class="player-controls">
-        <div class="control-group">
-          <label>Serveur</label>
-          <div class="pill-group" id="serverPillGroup">
-            <button class="pill-btn active" data-server="vidzy">Vidzy</button>
-            <button class="pill-btn" data-server="vidsrc">VidSrc</button>
-            <button class="pill-btn" data-server="embedsu">EmbedSu</button>
-            <button class="pill-btn" data-server="superembed">SuperEmbed</button>
+      <div class="preview-details">
+        <div class="preview-details-left">
+          <div class="preview-meta">
+            <span class="match-score">Recommandé à 97%</span>
+            <span id="previewYear">2026</span>
+            <span class="age-rating">16+</span>
+            <span id="previewTypeBadge" class="hd-badge">Film</span>
+            <span id="previewRating">⭐ 8.1</span>
           </div>
+          <p id="previewOverview" class="preview-overview"></p>
         </div>
-        <div id="seriesControls" class="series-controls" style="display:none">
-          <div class="control-group">
-            <label for="seasonSelect">Saison</label>
-            <select id="seasonSelect" class="custom-select"></select>
+        <div class="preview-details-right">
+          <div class="preview-info-line">
+            <span class="label">Genres :</span>
+            <span id="previewGenres" class="val">Action, Drame</span>
           </div>
-          <div class="control-group">
-            <label for="episodeSelect">Épisode</label>
-            <select id="episodeSelect" class="custom-select"></select>
+          <div class="preview-info-line">
+            <span class="label">Audio :</span>
+            <span class="val">Français (VF), Anglais (VOSTFR)</span>
           </div>
-        </div>
-        <div class="control-group">
-          <label>Audio</label>
-          <div class="pill-group" id="langPillGroup">
-            <button class="pill-btn active" data-lang="">Auto</button>
-            <button class="pill-btn" data-lang="vf">VF</button>
-            <button class="pill-btn" data-lang="vostfr">VOSTFR</button>
-          </div>
-        </div>
-        <div class="control-group toggle-group">
-          <label for="autoplayToggle">Lecture auto</label>
-          <input type="checkbox" id="autoplayToggle" class="switch" checked>
-        </div>
-        <div class="control-group">
-          <button id="markCompletedBtn" class="btn btn-sm btn-outline">✓ Marquer comme vu</button>
-        </div>
-      </div>
-      <div class="iframe-container">
-        <div id="playerLoader" class="player-loader">
-          <div class="spinner"></div>
-          <span>Chargement...</span>
-        </div>
-        <iframe id="videoIframe" src=""
-          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-encrypted-media"
-          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-          allowfullscreen></iframe>
-      </div>
-      <div class="media-details">
-        <div class="meta-tags">
-          <span id="modalRating" class="tag rating-tag">⭐ 0.0</span>
-          <span id="modalReleaseDate" class="tag">Année</span>
-          <span id="modalGenres" class="tag">Genres</span>
-          <span class="tag tag-safe">🛡️ Anti Pop-up</span>
-        </div>
-        <p id="modalOverview" class="media-synopsis"></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== SETTINGS MODAL ===== -->
-  <div id="settingsModal" class="modal">
-    <div class="modal-backdrop" id="closeSettingsBackdrop"></div>
-    <div class="modal-dialog small-dialog">
-      <div class="modal-header">
-        <h3>Mon Compte</h3>
-        <button id="closeSettingsBtn" class="modal-close">×</button>
-      </div>
-      <div class="modal-body">
-        <div class="settings-stats">
-          <div class="stat-pill">🕒 <span id="statsHistory">0</span> vus</div>
-          <div class="stat-pill">⭐ <span id="statsWishlist">0</span> en liste</div>
-        </div>
-        <div class="settings-data-section">
-          <h4>Sauvegarde</h4>
-          <p class="helper-text">Exportez votre historique et Ma Liste pour ne jamais les perdre.</p>
-          <div class="settings-actions-row">
-            <button id="exportDataBtn" class="btn btn-sm btn-outline">⬇️ Exporter</button>
-            <label class="btn btn-sm btn-outline" style="cursor:pointer">
-              ⬆️ Importer
-              <input type="file" id="importDataInput" accept=".json" style="display:none">
-            </label>
-          </div>
-        </div>
-        <div class="settings-data-section" style="margin-top:16px">
-          <h4>Clé TMDB</h4>
-          <p class="helper-text">Votre clé est configurée. Modifiez-la si nécessaire.</p>
-          <div class="form-group">
-            <input type="text" id="apiKeyInput" class="text-input" placeholder="Clé TMDB">
-          </div>
-          <div class="settings-actions">
-            <button id="saveApiKeyBtn" class="btn btn-primary btn-sm">Enregistrer</button>
-          </div>
-        </div>
-        <div class="settings-data-section" style="margin-top:16px">
-          <h4>Notifications & TV</h4>
-          <div class="settings-actions-row">
-            <button id="enableNotifBtn" class="btn btn-sm btn-outline">🔔 Activer les alertes</button>
-            <button id="castBtn" class="btn btn-sm btn-outline">📺 Regarder sur TV</button>
+          <div class="preview-info-line">
+            <span class="label">Serveurs :</span>
+            <span class="val">Vidzy (Auto), VidSrc, EmbedSu</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ===== CAST MODAL ===== -->
-  <div id="castModal" class="modal">
-    <div class="modal-backdrop" id="closeCastBackdrop"></div>
-    <div class="modal-dialog small-dialog">
-      <div class="modal-header">
-        <h3>📺 Regarder sur votre TV</h3>
-        <button id="closeCastBtn" class="modal-close">×</button>
+  <!-- ===================== NETFLIX PLAYER FULLSCREEN MODAL ===================== -->
+  <div class="player-overlay" id="playerModal">
+    <div class="player-topbar">
+      <button class="player-back-btn" id="playerBackBtn" title="Retour">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/></svg>
+      </button>
+      <div class="player-info-title">
+        <span id="playerMediaTitle">Titre du média</span>
+        <span class="player-sub-badge" id="playerSubBadge">Film</span>
       </div>
-      <div class="modal-body">
-        <div class="cast-card highlight-card">
-          <div class="cast-icon">🌐</div>
-          <div class="cast-info">
-            <h4>Accès réseau local</h4>
-            <p>Même Wi-Fi → ouvrez cette adresse dans votre TV / téléphone :</p>
-            <div class="url-copy-box">
-              <code id="localNetworkUrl">http://192.168.1.8:3000</code>
-              <button id="copyUrlBtn" class="btn btn-sm btn-primary">Copier</button>
-            </div>
+      <div class="player-topbar-actions">
+        <!-- Choix du Serveur -->
+        <div class="dropdown-select-wrap">
+          <label for="serverSelect">Serveur :</label>
+          <select id="serverSelect" class="netflix-select">
+            <option value="vidzy" selected>Vidzy (VF / VOSTFR)</option>
+            <option value="vidsrc">VidSrc (Rapide)</option>
+            <option value="embedsu">EmbedSu (HD Multi)</option>
+            <option value="superembed">SuperEmbed</option>
+          </select>
+        </div>
+
+        <!-- Pour les séries: Sélection Saison & Épisode -->
+        <div class="series-nav-group" id="seriesNavGroup" style="display:none">
+          <select id="playerSeasonSelect" class="netflix-select" title="Saison"></select>
+          <select id="playerEpisodeSelect" class="netflix-select" title="Épisode"></select>
+        </div>
+
+        <!-- Audio -->
+        <div class="dropdown-select-wrap">
+          <label for="langSelect">Audio :</label>
+          <select id="langSelect" class="netflix-select">
+            <option value="">Auto (Recommandé)</option>
+            <option value="vf">VF (Français)</option>
+            <option value="vostfr">VOSTFR</option>
+          </select>
+        </div>
+
+        <button class="btn-netflix-check" id="markWatchedBtn" title="Marquer comme vu">
+          ✓ Vu
+        </button>
+      </div>
+    </div>
+
+    <!-- Container Iframe Vidzy / Sandboxed -->
+    <div class="player-video-wrapper">
+      <div class="player-loading-spin" id="playerLoading">
+        <div class="netflix-spinner"></div>
+        <span>Connexion au flux vidéo sécurisé...</span>
+      </div>
+      <iframe 
+        id="videoIframe" 
+        src="" 
+        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-encrypted-media"
+        allow="autoplay; fullscreen; encrypted-media; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <!-- ===================== SETTINGS / BACKUP MODAL ===================== -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-backdrop" id="settingsBackdrop"></div>
+    <div class="simple-modal-dialog">
+      <button class="modal-close-round" id="closeSettingsBtn">&times;</button>
+      <h3>Sauvegarde & Paramètres Zetflix</h3>
+      <p class="modal-subtitle">Gérez vos données locales pour ne jamais perdre votre liste et votre historique.</p>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-number" id="statsWatchedCount">0</span>
+          <span class="stat-label">Titres regardés</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number" id="statsWishlistCount">0</span>
+          <span class="stat-label">Dans Ma Liste</span>
+        </div>
+      </div>
+
+      <div class="action-section">
+        <h4>Sauvegarder mes données</h4>
+        <p class="helper-text">Téléchargez une sauvegarde JSON pour restaurer vos listes sur n'importe quel appareil.</p>
+        <div class="btn-group-row">
+          <button class="btn-netflix-info" id="exportDataBtn">⬇️ Exporter le fichier</button>
+          <label class="btn-netflix-info" style="cursor:pointer">
+            ⬆️ Importer un fichier
+            <input type="file" id="importDataInput" accept=".json" style="display:none">
+          </label>
+        </div>
+      </div>
+
+      <div class="action-section">
+        <h4>Clé TMDB</h4>
+        <input type="text" id="apiKeyInput" class="netflix-input" placeholder="Clé d'API TMDB">
+        <button class="btn-netflix-play" id="saveApiKeyBtn" style="margin-top:10px">Sauvegarder la clé</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SMART TV / CAST MODAL ===================== -->
+  <div class="modal-overlay" id="castModal">
+    <div class="modal-backdrop" id="castBackdrop"></div>
+    <div class="simple-modal-dialog">
+      <button class="modal-close-round" id="closeCastBtn">&times;</button>
+      <h3>📺 Regarder Zetflix sur votre Smart TV</h3>
+      <p class="modal-subtitle">Plusieurs méthodes simples pour diffuser vos films et séries sur grand écran :</p>
+
+      <div class="tv-option-card">
+        <div class="tv-icon">🌐</div>
+        <div class="tv-text">
+          <strong>Navigateur TV / Téléphone / Tablette</strong>
+          <p>Assurez-vous d'être connecté au même Wi-Fi, ouvrez le navigateur de votre TV et rendez-vous sur :</p>
+          <div class="copy-url-bar">
+            <code id="localTvUrl">http://192.168.1.8:3000</code>
+            <button class="btn-netflix-play btn-sm" id="copyTvUrlBtn">Copier</button>
           </div>
         </div>
-        <div class="cast-card">
-          <div class="cast-icon">📡</div>
-          <div class="cast-info">
-            <h4>Google Cast / Chromecast</h4>
-            <p>Clic-droit dans Chrome → <strong>« Caster... »</strong> → choisissez votre TV.</p>
-          </div>
+      </div>
+
+      <div class="tv-option-card">
+        <div class="tv-icon">📡</div>
+        <div class="tv-text">
+          <strong>Chromecast / Google Cast</strong>
+          <p>Faites un clic droit n'importe où dans Google Chrome et cliquez sur <em>« Caster... »</em> pour envoyer l'onglet directement vers votre télévision.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="config.js?v=3"></script>
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="app.js?v=3"></script>
+  <!-- Scripts -->
+  <script src="config.js?v=zetflix-1"></script>
+  <script src="app.js?v=zetflix-1"></script>
 </body>
 </html>
