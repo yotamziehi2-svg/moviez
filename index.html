@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
   
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="style.css?v=dark-cinema-premium-1">
+  <link rel="stylesheet" href="style.css?v=dark-cinema-premium-2">
 </head>
 <body class="zetflix-app">
 
@@ -688,9 +688,18 @@
 
           <!-- Sélecteur de saison et épisode si c'est une série -->
           <div class="series-episodes-block" id="modalSeriesEpisodesBlock" style="display:none;">
-            <h4 class="section-micro-title" style="margin-top:20px;">ÉPISODES</h4>
-            <div class="series-season-select-wrap">
-              <select class="custom-select" id="modalSeasonSelect"></select>
+            <div class="series-block-header">
+              <h4 class="section-micro-title">SAISONS & ÉPISODES</h4>
+              <div class="series-selectors-row">
+                <div class="series-select-item">
+                  <label for="modalSeasonSelect">Saison :</label>
+                  <select class="custom-select" id="modalSeasonSelect"></select>
+                </div>
+                <div class="series-select-item">
+                  <label for="modalEpisodeSelect">Épisode :</label>
+                  <select class="custom-select" id="modalEpisodeSelect"></select>
+                </div>
+              </div>
             </div>
             <div class="series-episodes-list" id="modalEpisodesList"></div>
           </div>
@@ -739,6 +748,21 @@
       </div>
 
       <div class="player-topbar-right">
+        <!-- Navigation Séries (Saison & Épisode) -->
+        <div class="player-series-nav" id="playerSeriesNavGroup" style="display:none;">
+          <div class="player-dropdown-wrap">
+            <label class="player-control-lbl">Saison :</label>
+            <select class="custom-select select-sm select-season" id="playerSeasonSelect"></select>
+          </div>
+          <div class="player-dropdown-wrap">
+            <label class="player-control-lbl">Épisode :</label>
+            <select class="custom-select select-sm select-episode" id="playerEpisodeSelect"></select>
+          </div>
+          <button class="btn btn-purple-solid btn-sm" id="playerNextEpBtn" title="Épisode suivant">
+            Suivant ⏭
+          </button>
+        </div>
+
         <!-- Sélecteur de Serveurs sans pub -->
         <div class="player-dropdown-wrap">
           <label class="player-control-lbl">Serveur :</label>
@@ -840,7 +864,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="config.js?v=dark-cinema-premium-1"></script>
-  <script src="app.js?v=dark-cinema-premium-1"></script>
+  <script src="config.js?v=dark-cinema-premium-2"></script>
+  <script src="app.js?v=dark-cinema-premium-2"></script>
 </body>
 </html>

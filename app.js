@@ -148,7 +148,9 @@
     if (!item) return true;
     if (item.media_type === 'tv' || item.type === 'tv') return false;
     if (item.media_type === 'movie' || item.type === 'movie') return true;
-    if (item.first_air_date || (item.name && !item.release_date)) return false;
+    if (item.number_of_seasons !== undefined || item.seasons !== undefined) return false;
+    if (item.first_air_date) return false;
+    if (item.name && !item.title) return false;
     return true;
   }
 
@@ -749,10 +751,20 @@
   // 11. FICHE DÉTAILLÉE D'UN FILM / SÉRIE (DETAILS MODAL)
   // =========================================================================
   let currentModalMedia = null;
+  let modalSelectedSeason = 1;
+  let modalSelectedEpisode = 1;
+  let playerSeasonsList = [];
+  let playerEpisodesList = [];
+
   async function openDetailsModal(item) {
     currentModalMedia = item;
-    const isMov = isMovie(item);
+    let isMov = isMovie(item);
     const id = item.id;
+
+    // Récupérer la dernière saison / épisode regardé dans l'historique si disponible
+    const historyItem = historyList.find(h => h.id === id);
+    modalSelectedSeason = historyItem ? (parseInt(historyItem.season, 10) || 1) : 1;
+    modalSelectedEpisode = historyItem ? (parseInt(historyItem.episode, 10) || 1) : 1;
 
     // Remplissage initial immédiat avec les données disponibles
     const title = item.title || item.name || '';
@@ -762,38 +774,78 @@
 
     document.getElementById('modalBackdropImg').src = backdropUrl;
     document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalTypeBadge').textContent = isMov ? 'FILM' : 'SÉRIE';
     document.getElementById('modalRating').textContent = `★ ${rating}`;
     document.getElementById('modalYear').textContent = year;
-    document.getElementById('modalRuntime').textContent = isMov ? '2h 15min' : 'Saisons complètes';
     document.getElementById('modalOverview').textContent = item.overview || 'Synopsis détaillé indisponible.';
 
     // Wishlist état
     const inWish = wishlist.some(w => w.id === id);
     document.getElementById('modalWishlistText').textContent = inWish ? 'Dans ma liste' : 'Ajouter à ma liste';
 
-    document.getElementById('modalPlayBtn').onclick = () => {
-      closeDetailsModal();
-      openPlayer({ ...item, media_type: isMov ? 'movie' : 'tv' });
-    };
-
     document.getElementById('modalWishlistBtn').onclick = () => {
-      toggleWishlist({ ...item, media_type: isMov ? 'movie' : 'tv' });
+      toggleWishlist({ ...currentModalMedia, media_type: isMov ? 'movie' : 'tv' });
       const nowIn = wishlist.some(w => w.id === id);
       document.getElementById('modalWishlistText').textContent = nowIn ? 'Dans ma liste' : 'Ajouter à ma liste';
     };
 
-    // Gestion des saisons si c'est une série
+    // Vérification approfondie auprès de TMDB pour certifier Film ou Série
     const episodesBlock = document.getElementById('modalSeriesEpisodesBlock');
+    let deepDetails = null;
+
+    try {
+      if (!isMov) {
+        deepDetails = await fetchTMDB(`/tv/${id}`);
+        isMov = false;
+        currentModalMedia.media_type = 'tv';
+      } else {
+        try {
+          deepDetails = await fetchTMDB(`/movie/${id}`);
+          isMov = true;
+          currentModalMedia.media_type = 'movie';
+        } catch (errMovie) {
+          // Si 404 sur movie, c'est très probablement une série
+          deepDetails = await fetchTMDB(`/tv/${id}`);
+          if (deepDetails && (deepDetails.seasons || deepDetails.number_of_seasons || deepDetails.name)) {
+            isMov = false;
+            currentModalMedia.media_type = 'tv';
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Erreur vérification TMDB:', e);
+    }
+
+    document.getElementById('modalTypeBadge').textContent = isMov ? 'FILM' : 'SÉRIE';
+    document.getElementById('modalRuntime').textContent = isMov
+      ? (deepDetails && deepDetails.runtime ? `${Math.floor(deepDetails.runtime / 60)}h ${deepDetails.runtime % 60}min` : '2h 15min')
+      : (deepDetails && deepDetails.number_of_seasons ? `${deepDetails.number_of_seasons} saison${deepDetails.number_of_seasons > 1 ? 's' : ''}` : 'Saisons complètes');
+
+    if (deepDetails && deepDetails.genres && deepDetails.genres.length > 0) {
+      document.getElementById('modalGenres').textContent = deepDetails.genres.map(g => g.name).join(', ');
+    }
+
+    // Bouton principal "Regarder maintenant"
+    document.getElementById('modalPlayBtn').onclick = () => {
+      closeDetailsModal();
+      if (!isMov) {
+        const s = parseInt(document.getElementById('modalSeasonSelect').value || modalSelectedSeason || 1, 10);
+        const ep = parseInt(document.getElementById('modalEpisodeSelect').value || modalSelectedEpisode || 1, 10);
+        openPlayer(currentModalMedia, s, ep);
+      } else {
+        openPlayer(currentModalMedia);
+      }
+    };
+
+    // Gestion des saisons et épisodes
     if (!isMov) {
       episodesBlock.style.display = 'block';
-      loadModalSeasons(id);
+      await loadModalSeasons(id, modalSelectedSeason, modalSelectedEpisode, deepDetails);
     } else {
       episodesBlock.style.display = 'none';
     }
 
-    // Charger les détails approfondis et titres similaires
-    loadModalDeepDetails(id, isMov);
+    // Charger les titres similaires
+    loadModalSimilar(id, isMov);
 
     // Afficher la modale
     document.getElementById('detailsModal').classList.add('active');
@@ -806,21 +858,9 @@
     currentModalMedia = null;
   }
 
-  async function loadModalDeepDetails(id, isMov) {
+  async function loadModalSimilar(id, isMov) {
     try {
       const type = isMov ? 'movie' : 'tv';
-      const details = await fetchTMDB(`/${type}/${id}`);
-
-      if (details.genres && details.genres.length > 0) {
-        document.getElementById('modalGenres').textContent = details.genres.map(g => g.name).join(', ');
-      }
-      if (details.runtime) {
-        const hrs = Math.floor(details.runtime / 60);
-        const mins = details.runtime % 60;
-        document.getElementById('modalRuntime').textContent = `${hrs}h ${mins}min`;
-      }
-
-      // Titres similaires
       const simData = await fetchTMDB(`/${type}/${id}/similar`);
       const simTrack = document.getElementById('modalSimilarTrack');
       simTrack.innerHTML = '';
@@ -830,71 +870,148 @@
     } catch (e) {}
   }
 
-  async function loadModalSeasons(tvId) {
+  async function loadModalSeasons(tvId, targetSeason = 1, targetEpisode = 1, existingDetails = null) {
     const seasonSelect = document.getElementById('modalSeasonSelect');
     seasonSelect.innerHTML = '<option>Chargement des saisons...</option>';
     try {
-      const tvData = await fetchTMDB(`/tv/${tvId}`);
+      const tvData = existingDetails || await fetchTMDB(`/tv/${tvId}`);
       const seasons = (tvData.seasons || []).filter(s => s.season_number > 0);
       seasonSelect.innerHTML = '';
 
-      seasons.forEach(s => {
+      if (seasons.length === 0) {
         const opt = document.createElement('option');
-        opt.value = s.season_number;
-        opt.textContent = `Saison ${s.season_number} (${s.episode_count} épisodes)`;
+        opt.value = '1';
+        opt.textContent = 'Saison 1';
         seasonSelect.appendChild(opt);
-      });
+        modalSelectedSeason = 1;
+      } else {
+        seasons.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.season_number;
+          opt.textContent = `Saison ${s.season_number} (${s.episode_count || 10} épisodes)`;
+          if (s.season_number === targetSeason) opt.selected = true;
+          seasonSelect.appendChild(opt);
+        });
 
-      seasonSelect.onchange = () => loadModalEpisodes(tvId, seasonSelect.value);
-      if (seasons.length > 0) {
-        loadModalEpisodes(tvId, seasons[0].season_number);
+        // Vérifier si la saison cible existe
+        const hasTarget = seasons.some(s => s.season_number === targetSeason);
+        modalSelectedSeason = hasTarget ? targetSeason : seasons[0].season_number;
+        seasonSelect.value = modalSelectedSeason;
       }
+
+      // Écouter le changement de saison
+      seasonSelect.onchange = () => {
+        modalSelectedSeason = parseInt(seasonSelect.value, 10) || 1;
+        modalSelectedEpisode = 1;
+        loadModalEpisodes(tvId, modalSelectedSeason, 1);
+      };
+
+      // Charger les épisodes de la saison sélectionnée
+      await loadModalEpisodes(tvId, modalSelectedSeason, targetEpisode);
+
     } catch (e) {
+      console.error('Erreur chargement saisons:', e);
       seasonSelect.innerHTML = '<option value="1">Saison 1</option>';
+      await loadModalEpisodes(tvId, 1, 1);
     }
   }
 
-  async function loadModalEpisodes(tvId, seasonNumber) {
+  async function loadModalEpisodes(tvId, seasonNumber, targetEpisode = 1) {
+    const epSelect = document.getElementById('modalEpisodeSelect');
     const list = document.getElementById('modalEpisodesList');
-    list.innerHTML = '<div style="color:var(--text-muted);padding:8px;">Chargement des épisodes...</div>';
+    epSelect.innerHTML = '<option>Chargement...</option>';
+    list.innerHTML = '<div style="color:var(--text-muted);padding:14px;text-align:center;">Chargement des épisodes de la Saison ' + seasonNumber + '...</div>';
+
     try {
       const seasonData = await fetchTMDB(`/tv/${tvId}/season/${seasonNumber}`);
+      const episodes = seasonData.episodes || [];
       list.innerHTML = '';
-      (seasonData.episodes || []).forEach(ep => {
+      epSelect.innerHTML = '';
+
+      if (episodes.length === 0) {
+        list.innerHTML = '<div style="color:var(--text-muted);padding:14px;text-align:center;">Aucun épisode répertorié pour cette saison.</div>';
+        epSelect.innerHTML = '<option value="1">Épisode 1</option>';
+        return;
+      }
+
+      // 1. Remplir le sélecteur d'épisodes
+      episodes.forEach(ep => {
+        const opt = document.createElement('option');
+        opt.value = ep.episode_number;
+        opt.textContent = `Ép. ${ep.episode_number} — ${ep.name || 'Épisode ' + ep.episode_number}`;
+        if (ep.episode_number === targetEpisode) opt.selected = true;
+        epSelect.appendChild(opt);
+      });
+
+      modalSelectedEpisode = targetEpisode;
+      epSelect.value = modalSelectedEpisode;
+
+      epSelect.onchange = () => {
+        modalSelectedEpisode = parseInt(epSelect.value, 10) || 1;
+        // Mettre en surbrillance l'épisode dans la liste
+        document.querySelectorAll('#modalEpisodesList .episode-card-row').forEach(row => {
+          row.classList.toggle('active', parseInt(row.dataset.epNum, 10) === modalSelectedEpisode);
+        });
+      };
+
+      // 2. Remplir la liste visuelle interactive d'épisodes
+      episodes.forEach(ep => {
         const row = document.createElement('div');
-        row.className = 'episode-card-row';
+        row.className = `episode-card-row ${ep.episode_number === targetEpisode ? 'active' : ''}`;
+        row.dataset.epNum = ep.episode_number;
+
+        const thumbUrl = ep.still_path
+          ? `${TMDB_IMG_POSTER}${ep.still_path}`
+          : (currentModalMedia && currentModalMedia.backdrop_path ? `${TMDB_IMG_POSTER}${currentModalMedia.backdrop_path}` : FALLBACK_POSTER);
+
+        const runtimeText = ep.runtime ? `${ep.runtime} min` : '';
+
         row.innerHTML = `
-          <span>Épisode ${ep.episode_number} — ${ep.name || 'Épisode'}</span>
-          <span style="color:var(--secondary-purple);font-size:0.8rem;">▶ Regarder</span>
+          <img src="${thumbUrl}" alt="Épisode ${ep.episode_number}" class="episode-card-thumb" loading="lazy">
+          <div class="episode-card-body">
+            <div class="episode-card-title">Épisode ${ep.episode_number} : ${ep.name || 'Épisode ' + ep.episode_number}</div>
+            <div class="episode-card-sub">${runtimeText ? runtimeText + ' • ' : ''}${ep.overview || 'Regarder dès maintenant sur ZETFLIX.'}</div>
+          </div>
+          <button class="episode-card-play-action">▶ Lire</button>
         `;
+
         row.onclick = () => {
           closeDetailsModal();
           openPlayer(currentModalMedia, seasonNumber, ep.episode_number);
         };
+
         list.appendChild(row);
       });
+
     } catch (e) {
-      list.innerHTML = '<div style="color:var(--text-muted);padding:8px;">Épisodes non disponibles.</div>';
+      console.error('Erreur chargement épisodes:', e);
+      list.innerHTML = '<div style="color:var(--text-muted);padding:14px;text-align:center;">Épisodes temporairement indisponibles.</div>';
+      epSelect.innerHTML = '<option value="1">Épisode 1</option>';
     }
   }
 
   // =========================================================================
   // 12. LECTEUR VIDÉO IMMERSIF (VIDZY + MULTI-SERVEURS SANS PUB)
   // =========================================================================
-  function openPlayer(item, season = 1, episode = 1) {
+  async function openPlayer(item, season = 1, episode = 1) {
     activeMedia = item;
-    currentSeason = season;
-    currentEpisode = episode;
     const isMov = isMovie(item);
+    currentSeason = parseInt(season, 10) || 1;
+    currentEpisode = parseInt(episode, 10) || 1;
     const title = item.title || item.name || 'Titre inconnu';
 
     document.getElementById('playerTitle').textContent = title;
     const epBadge = document.getElementById('playerEpisodeBadge');
+    const seriesNav = document.getElementById('playerSeriesNavGroup');
+
     if (!isMov) {
-      epBadge.textContent = `S${season} : E${episode}`;
+      epBadge.textContent = `S${currentSeason} : E${currentEpisode}`;
       epBadge.style.display = 'inline-block';
+      seriesNav.style.display = 'flex';
+      setupPlayerSeriesNavigation(item.id, currentSeason, currentEpisode);
     } else {
       epBadge.style.display = 'none';
+      seriesNav.style.display = 'none';
     }
 
     // Réinitialiser la progression et le temps
@@ -906,7 +1023,7 @@
     updatePlayerEmbed();
 
     // Sauvegarder dans l'historique
-    saveHistory(item, season, episode, 25);
+    saveHistory(item, currentSeason, currentEpisode, 25);
 
     // Afficher l'overlay
     document.getElementById('videoPlayerModal').classList.add('active');
@@ -924,6 +1041,90 @@
     if (playerTicker) clearInterval(playerTicker);
 
     if (currentView === 'history') renderHistory();
+  }
+
+  async function setupPlayerSeriesNavigation(tvId, targetSeason, targetEpisode) {
+    const seasonSelect = document.getElementById('playerSeasonSelect');
+    const episodeSelect = document.getElementById('playerEpisodeSelect');
+    seasonSelect.innerHTML = '<option>Chargement...</option>';
+    episodeSelect.innerHTML = '<option>Chargement...</option>';
+
+    try {
+      const tvData = await fetchTMDB(`/tv/${tvId}`);
+      playerSeasonsList = (tvData.seasons || []).filter(s => s.season_number > 0);
+      seasonSelect.innerHTML = '';
+
+      if (playerSeasonsList.length === 0) {
+        playerSeasonsList = [{ season_number: 1 }];
+      }
+
+      playerSeasonsList.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.season_number;
+        opt.textContent = `Saison ${s.season_number}`;
+        if (s.season_number === targetSeason) opt.selected = true;
+        seasonSelect.appendChild(opt);
+      });
+
+      // Charger les épisodes de la saison ciblée
+      await loadPlayerEpisodes(tvId, targetSeason, targetEpisode);
+
+      seasonSelect.onchange = async () => {
+        currentSeason = parseInt(seasonSelect.value, 10) || 1;
+        currentEpisode = 1;
+        await loadPlayerEpisodes(tvId, currentSeason, 1);
+        updatePlayerEpisodeUI();
+        updatePlayerEmbed();
+        saveHistory(activeMedia, currentSeason, currentEpisode);
+      };
+
+      episodeSelect.onchange = () => {
+        currentEpisode = parseInt(episodeSelect.value, 10) || 1;
+        updatePlayerEpisodeUI();
+        updatePlayerEmbed();
+        saveHistory(activeMedia, currentSeason, currentEpisode);
+      };
+
+    } catch (e) {
+      console.error('Erreur chargement saisons joueur:', e);
+      seasonSelect.innerHTML = `<option value="${targetSeason}">Saison ${targetSeason}</option>`;
+      episodeSelect.innerHTML = `<option value="${targetEpisode}">Épisode ${targetEpisode}</option>`;
+    }
+  }
+
+  async function loadPlayerEpisodes(tvId, seasonNumber, targetEpisode = 1) {
+    const episodeSelect = document.getElementById('playerEpisodeSelect');
+    episodeSelect.innerHTML = '<option>Chargement...</option>';
+    try {
+      const seasonData = await fetchTMDB(`/tv/${tvId}/season/${seasonNumber}`);
+      playerEpisodesList = seasonData.episodes || [];
+      episodeSelect.innerHTML = '';
+
+      if (playerEpisodesList.length === 0) {
+        episodeSelect.innerHTML = `<option value="1">Épisode 1</option>`;
+        currentEpisode = 1;
+        return;
+      }
+
+      playerEpisodesList.forEach(ep => {
+        const opt = document.createElement('option');
+        opt.value = ep.episode_number;
+        opt.textContent = `Ép. ${ep.episode_number} - ${ep.name || 'Épisode ' + ep.episode_number}`;
+        if (ep.episode_number === targetEpisode) opt.selected = true;
+        episodeSelect.appendChild(opt);
+      });
+
+      const hasTarget = playerEpisodesList.some(e => e.episode_number === targetEpisode);
+      currentEpisode = hasTarget ? targetEpisode : playerEpisodesList[0].episode_number;
+      episodeSelect.value = currentEpisode;
+    } catch (e) {
+      episodeSelect.innerHTML = `<option value="${targetEpisode}">Épisode ${targetEpisode}</option>`;
+    }
+  }
+
+  function updatePlayerEpisodeUI() {
+    const epBadge = document.getElementById('playerEpisodeBadge');
+    if (epBadge) epBadge.textContent = `S${currentSeason} : E${currentEpisode}`;
   }
 
   function updatePlayerEmbed() {
@@ -1262,6 +1463,34 @@
 
     // 9. Lecteur Vidéo
     document.getElementById('playerExitBtn').addEventListener('click', closePlayer);
+
+    document.getElementById('playerNextEpBtn').addEventListener('click', () => {
+      if (!activeMedia || isMovie(activeMedia)) return;
+      const currentIdx = playerEpisodesList.findIndex(e => e.episode_number === currentEpisode);
+      if (currentIdx >= 0 && currentIdx < playerEpisodesList.length - 1) {
+        currentEpisode = playerEpisodesList[currentIdx + 1].episode_number;
+        document.getElementById('playerEpisodeSelect').value = currentEpisode;
+        updatePlayerEpisodeUI();
+        updatePlayerEmbed();
+        saveHistory(activeMedia, currentSeason, currentEpisode);
+      } else {
+        const nextSeason = currentSeason + 1;
+        const hasNext = playerSeasonsList.some(s => s.season_number === nextSeason);
+        if (hasNext) {
+          currentSeason = nextSeason;
+          currentEpisode = 1;
+          document.getElementById('playerSeasonSelect').value = currentSeason;
+          loadPlayerEpisodes(activeMedia.id, currentSeason, 1).then(() => {
+            updatePlayerEpisodeUI();
+            updatePlayerEmbed();
+            saveHistory(activeMedia, currentSeason, currentEpisode);
+          });
+        } else {
+          alert('Vous avez atteint le dernier épisode disponible !');
+        }
+      }
+    });
+
     document.getElementById('playerServerSelect').addEventListener('change', (e) => {
       currentServer = e.target.value;
       updatePlayerEmbed();
