@@ -3,365 +3,844 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Zetflix - Regarder des séries et films en streaming</title>
-  <link rel="stylesheet" href="style.css?v=zetflix-rounded-2">
+  <title>ZETFLIX — Streaming Cinématographique Premium</title>
+  
+  <!-- Polices Google : Outfit (Titres), Sora (Accents), Inter (Textes courants) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Netflix+Sans:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css?v=dark-cinema-premium-1">
 </head>
-<body class="zetflix-body">
+<body class="zetflix-app">
 
-  <!-- ===================== NETFLIX NAVBAR ===================== -->
-  <header class="zetflix-nav" id="mainNav">
-    <div class="nav-left">
-      <a href="#" class="brand-logo" id="brandLogo">
-        <span class="logo-z">ZETFLIX</span>
-      </a>
-      <ul class="nav-menu">
-        <li class="menu-item active" data-tab="home">Accueil</li>
-        <li class="menu-item" data-tab="series">Séries</li>
-        <li class="menu-item" data-tab="movies">Films</li>
-        <li class="menu-item" data-tab="genres">Catégories & Genres</li>
-        <li class="menu-item" data-tab="top">Nouveautés les plus regardées</li>
-        <li class="menu-item" data-tab="wishlist">Ma liste</li>
-        <li class="menu-item" data-tab="history">Historique</li>
-      </ul>
-    </div>
+  <!-- =========================================================================
+       APPLICATION LAYOUT (SIDEBAR GAUCHE + MAIN WRAPPER)
+       ========================================================================= -->
+  <div class="app-layout">
 
-    <div class="nav-right">
-      <!-- Search Box expandable -->
-      <div class="search-widget" id="searchWidget">
-        <button class="search-btn" id="searchToggle" title="Rechercher">
-          <svg viewBox="0 0 24 24"><path d="M21.71 20.29l-5.4-5.4A8 8 0 1 0 10 16a7.93 7.93 0 0 0 4.89-1.69l5.4 5.4a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42zM4 10a6 6 0 1 1 6 6 6 6 0 0 1-6-6z" fill="currentColor"/></svg>
-        </button>
-        <input type="text" id="searchInput" class="search-input" placeholder="Titres, personnes, genres..." autocomplete="off">
-        <button class="clear-search-btn" id="clearSearch" style="display:none">&times;</button>
+    <!-- BARRE LATÉRALE PERSISTANTE (DESKTOP) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand" id="brandLogo">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 28 28" fill="none">
+            <path d="M7 4.5L22 14L7 23.5V4.5Z" fill="url(#violetPlayGradient)" />
+            <defs>
+              <linearGradient id="violetPlayGradient" x1="7" y1="4.5" x2="22" y2="23.5" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#9B5CFF"/>
+                <stop offset="1" stop-color="#751BEB"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="brand-name">ZET<span class="brand-name-accent">FLIX</span></span>
       </div>
 
-      <!-- Notifications -->
-      <div class="notifications-wrapper" id="notifWrapper">
-        <button class="icon-nav-btn" id="notifBtn" title="Notifications">
-          <svg viewBox="0 0 24 24"><path d="M12 22a2.98 2.98 0 0 0 2.82-2H9.18A2.98 2.98 0 0 0 12 22zm7-6v-5c0-3.07-1.64-5.64-4.5-6.32V4a2.5 2.5 0 0 0-5 0v.68C6.63 5.36 5 7.92 5 11v5l-2 2v1h18v-1l-2-2z" fill="currentColor"/></svg>
-          <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">MENU PRINCIPAL</div>
+        <button class="nav-item active" data-view="home">
+          <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3L21 9.5V20C21 20.5523 20.5523 21 20 21H15V14H9V21H4C3.44772 21 3 20.5523 3 20V9.5Z" fill="currentColor"/></svg>
+          <span>Accueil</span>
         </button>
-        <div class="notif-dropdown" id="notifDropdown">
-          <div class="notif-dropdown-header">
-            <span>Dernières sorties</span>
-            <button id="enableNotifBtn" class="link-action">Activer alertes</button>
-          </div>
-          <div class="notif-list" id="notifList">
-            <p class="empty-text">Aucune nouvelle sortie pour le moment.</p>
-          </div>
-        </div>
-      </div>
+        <button class="nav-item" data-view="movies">
+          <svg viewBox="0 0 24 24"><path d="M19 4H5C3.89543 4 3 4.89543 3 6V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V6C21 4.89543 20.1046 4 19 4ZM7 18H5V16H7V18ZM7 14H5V12H7V14ZM7 10H5V8H7V10ZM19 18H17V16H19V18ZM19 14H17V12H19V14ZM19 10H17V8H19V10ZM15 18H9V6H15V18Z" fill="currentColor"/></svg>
+          <span>Films</span>
+        </button>
+        <button class="nav-item" data-view="series">
+          <svg viewBox="0 0 24 24"><path d="M21 6H3C1.89543 6 1 6.89543 1 8V18C1 19.1046 1.89543 20 3 20H21C22.1046 20 23 19.1046 23 18V8C23 6.89543 22.1046 6 21 6ZM21 18H3V8H21V18ZM8.5 3L12 6.5L15.5 3L17 4.5L13.5 8H10.5L7 4.5L8.5 3Z" fill="currentColor"/></svg>
+          <span>Séries</span>
+        </button>
+        <button class="nav-item" data-view="explore">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM14.19 14.19L6 18L9.81 9.81L18 6L14.19 14.19ZM12 10.5C11.17 10.5 10.5 11.17 10.5 12C10.5 12.83 11.17 13.5 12 13.5C12.83 13.5 13.5 12.83 13.5 12C13.5 11.17 12.83 10.5 12 10.5Z" fill="currentColor"/></svg>
+          <span>Explorer</span>
+        </button>
+        <button class="nav-item" data-view="search">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/></svg>
+          <span>Recherche</span>
+        </button>
 
-      <!-- Profile / Settings Avatar -->
-      <div class="profile-menu-wrapper" id="profileWrapper">
-        <div class="profile-avatar" id="profileBtn" title="Compte">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" alt="Profil">
-          <span class="dropdown-caret">▾</span>
+        <div class="nav-section-label" style="margin-top:20px;">BIBLIOTHÈQUE</div>
+        <button class="nav-item" data-view="library">
+          <svg viewBox="0 0 24 24"><path d="M17 3H7C5.9 3 5.01 3.9 5.01 5L5 21L12 18L19 21V5C19 3.9 18.1 3 17 3ZM17 18L12 15.82L7 18V5H17V18Z" fill="currentColor"/></svg>
+          <span>Ma liste</span>
+          <span class="nav-pill-count" id="sidebarWishlistCount" style="display:none">0</span>
+        </button>
+        <button class="nav-item" data-view="history">
+          <svg viewBox="0 0 24 24"><path d="M13 3C8.03 3 4 7.03 4 12H1L4.89 15.89L4.96 16.03L9 12H6C6 8.13 9.13 5 13 5C16.87 5 20 8.13 20 12C20 15.87 16.87 19 13 19C11.07 19 9.32 18.21 8.06 16.94L6.64 18.36C8.27 19.99 10.51 21 13 21C17.97 21 22 16.97 22 12C22 7.03 17.97 3 13 3ZM12 8V13L16.28 15.54L17 14.33L13.5 12.25V8H12Z" fill="currentColor"/></svg>
+          <span>Historique</span>
+        </button>
+        <button class="nav-item" data-view="downloads">
+          <svg viewBox="0 0 24 24"><path d="M19 9H15V3H9V9H5L12 16L19 9ZM5 18V20H19V18H5Z" fill="currentColor"/></svg>
+          <span>Téléchargements</span>
+        </button>
+        <button class="nav-item" data-view="settings">
+          <svg viewBox="0 0 24 24"><path d="M19.43 12.98C19.47 12.66 19.5 12.34 19.5 12C19.5 11.66 19.47 11.34 19.43 11.02L21.54 9.37C21.73 9.22 21.78 8.95 21.66 8.73L19.66 5.27C19.54 5.05 19.27 4.97 19.05 5.05L16.56 6.05C16.04 5.65 15.48 5.32 14.87 5.07L14.49 2.42C14.46 2.18 14.25 2 14 2H10C9.75 2 9.54 2.18 9.51 2.42L9.13 5.07C8.52 5.32 7.96 5.66 7.44 6.05L4.95 5.05C4.73 4.96 4.46 5.05 4.34 5.27L2.34 8.73C2.21 8.95 2.27 9.22 2.46 9.37L4.57 11.02C4.53 11.34 4.5 11.67 4.5 12C4.5 12.33 4.53 12.66 4.57 12.98L2.46 14.63C2.27 14.78 2.21 15.05 2.34 15.27L4.34 18.73C4.46 18.95 4.73 19.03 4.95 18.95L7.44 17.95C7.96 18.35 8.52 18.68 9.13 18.93L9.51 21.58C9.54 21.82 9.75 22 10 22H14C14.25 22 14.46 21.82 14.49 21.58L14.87 18.93C15.48 18.68 16.04 18.34 16.56 17.95L19.05 18.95C19.28 19.04 19.54 18.95 19.66 18.73L21.66 15.27C21.78 15.05 21.73 14.78 21.54 14.63L19.43 12.98ZM12 15.5C10.07 15.5 8.5 13.93 8.5 12C8.5 10.07 10.07 8.5 12 8.5C13.93 8.5 15.5 10.07 15.5 12C15.5 13.93 13.93 15.5 12 15.5Z" fill="currentColor"/></svg>
+          <span>Paramètres</span>
+        </button>
+      </nav>
+
+      <!-- UTILISATEUR CARD COMPACTE (SIDEBAR BAS) -->
+      <div class="sidebar-user-card" id="sidebarUserCard" data-view="profile">
+        <div class="sidebar-avatar-wrapper">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80" alt="Avatar Ziehi Yotam" class="sidebar-avatar" id="sidebarAvatarImg">
         </div>
-        <div class="profile-dropdown" id="profileDropdown">
-          <div class="profile-summary">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" alt="Avatar">
-            <div>
-              <div class="profile-name">Membre Zetflix</div>
-              <div class="profile-sub" id="profileStatsCount">0 vus · 0 en liste</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">Ziehi Yotam</div>
+          <div class="sidebar-user-badge">
+            <span class="crown-icon">👑</span>
+            <span>Premium</span>
+          </div>
+        </div>
+        <div class="sidebar-user-arrow">›</div>
+      </div>
+    </aside>
+
+    <!-- ZONE PRINCIPALE DE L'APPLICATION -->
+    <div class="main-wrapper">
+
+      <!-- EN-TÊTE SUPÉRIEURE (TOPBAR) -->
+      <header class="topbar">
+        <div class="topbar-search-box">
+          <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/></svg>
+          <input type="text" id="globalSearchInput" placeholder="Rechercher un film, une série..." autocomplete="off">
+          <button class="topbar-search-clear" id="globalSearchClear" style="display:none">&times;</button>
+        </div>
+
+        <div class="topbar-actions">
+          <!-- Bouton Notifications -->
+          <div class="topbar-dropdown-wrap">
+            <button class="topbar-icon-btn" id="notifBellBtn" title="Notifications de sorties">
+              <svg viewBox="0 0 24 24"><path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.89 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="currentColor"/></svg>
+              <span class="notif-ping" id="notifPing" style="display:none"></span>
+              <span class="notif-count-badge" id="notifCountBadge" style="display:none">1</span>
+            </button>
+            <div class="dropdown-panel notif-panel" id="notifDropdownPanel">
+              <div class="dropdown-header">
+                <span>Notifications</span>
+                <button class="dropdown-link-btn" id="enablePushNotifsBtn">Activer alertes</button>
+              </div>
+              <div class="notif-items-list" id="notifItemsList">
+                <p class="empty-notif-msg">Aucune nouvelle notification pour le moment.</p>
+              </div>
             </div>
           </div>
-          <div class="dropdown-divider"></div>
-          <button class="dropdown-link" id="settingsDataBtn">⚙️ Sauvegarde & Données</button>
-          <button class="dropdown-link" id="castTvBtn">📺 Regarder sur Smart TV</button>
-          <button class="dropdown-link" id="changeApiBtn">🔑 Modifier Clé TMDB</button>
-        </div>
-      </div>
-    </div>
-  </header>
 
-  <!-- ===================== BOTTOM NAVIGATION (MOBILE) ===================== -->
-  <nav class="zetflix-mobile-nav" id="mobileNav">
-    <button class="mob-nav-btn active" data-tab="home">
+          <!-- Bouton Plein Écran -->
+          <button class="topbar-icon-btn" id="toggleFullscreenBtn" title="Basculer plein écran">
+            <svg viewBox="0 0 24 24"><path d="M7 14H5V19H10V17H7V14ZM5 10H7V7H10V5H5V10ZM17 17H14V19H19V14H17V17ZM14 5V7H17V10H19V5H14Z" fill="currentColor"/></svg>
+          </button>
+
+          <!-- Bouton Profil Menu -->
+          <div class="topbar-dropdown-wrap">
+            <div class="topbar-profile-trigger" id="topbarProfileTrigger">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80" alt="Avatar" class="topbar-avatar" id="topbarAvatarImg">
+            </div>
+            <div class="dropdown-panel profile-panel" id="profileDropdownPanel">
+              <div class="profile-card-mini">
+                <div class="profile-mini-name">Ziehi Yotam</div>
+                <div class="profile-mini-sub">Abonnement Premium Actif</div>
+              </div>
+              <div class="dropdown-sep"></div>
+              <button class="dropdown-menu-item" data-action="go-profile">👤 Mon Profil</button>
+              <button class="dropdown-menu-item" data-action="go-library">💜 Ma Liste</button>
+              <button class="dropdown-menu-item" data-action="go-settings">⚙️ Paramètres</button>
+              <button class="dropdown-menu-item" data-action="cast-tv">📺 Diffuser sur TV</button>
+              <div class="dropdown-sep"></div>
+              <button class="dropdown-menu-item text-danger" data-action="logout">Déconnexion</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =====================================================================
+           CONTENEUR DE VUES (PAGES SANS RECHARGEMENT - SPA)
+           ===================================================================== -->
+      <main class="content-viewport" id="contentViewport">
+
+        <!-- ==================== 1. VUE ACCUEIL (HOME) ==================== -->
+        <section class="view-screen active" id="view-home">
+          <!-- HERO BANNER GÉANTE CINE-PREMIUM -->
+          <div class="hero-banner" id="heroBanner">
+            <div class="hero-backdrop" id="heroBackdrop"></div>
+            <div class="hero-overlay-gradient"></div>
+            
+            <div class="hero-content">
+              <div class="hero-tag-spotlight">
+                <span class="spotlight-star">★</span> Film à la une
+              </div>
+              <h1 class="hero-title" id="heroTitle">John Wick: Chapter 4</h1>
+              
+              <div class="hero-meta-row" id="heroMetaRow">
+                <span class="hero-year" id="heroYear">2023</span>
+                <span class="hero-meta-sep">•</span>
+                <span class="hero-genre" id="heroGenre">Action • Thriller</span>
+                <span class="hero-meta-sep">•</span>
+                <span class="hero-duration" id="heroDuration">2h 49min</span>
+                <span class="hero-badge-pill">HD</span>
+                <span class="hero-badge-pill">16+</span>
+                <span class="hero-rating-badge" id="heroRating">★ 8.2</span>
+              </div>
+
+              <p class="hero-synopsis" id="heroSynopsis">
+                John Wick découvre un moyen de vaincre la Grande Table. Mais avant de gagner sa liberté, Wick doit affronter un nouvel ennemi qui a tissé de puissantes alliances à travers le monde...
+              </p>
+
+              <div class="hero-actions-row">
+                <button class="btn btn-purple-solid" id="heroPlayBtn">
+                  <svg viewBox="0 0 24 24"><path d="M8 5V19L19 12L8 5Z" fill="currentColor"/></svg>
+                  <span>Regarder</span>
+                </button>
+                <button class="btn btn-glass-secondary" id="heroWishlistBtn">
+                  <svg viewBox="0 0 24 24"><path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor"/></svg>
+                  <span id="heroWishlistText">Ajouter à ma liste</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Indicateurs carrousel Hero (Dots) -->
+            <div class="hero-dots-container" id="heroDots"></div>
+          </div>
+
+          <!-- RANGÉES HORIZONTALES (CARROUSELS) -->
+          <div class="catalog-sections-container" id="homeRowsContainer"></div>
+        </section>
+
+        <!-- ==================== 2. VUE FILMS & SÉRIES ==================== -->
+        <section class="view-screen" id="view-catalog">
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title" id="catalogViewTitle">Films</h2>
+              <p class="view-subtitle" id="catalogViewSubtitle">Explorez tous les chefs-d'œuvre cinématographiques.</p>
+            </div>
+            <div class="catalog-sort-filter">
+              <select class="custom-select" id="catalogSortSelect">
+                <option value="popular">Trier par Popularité</option>
+                <option value="rating">Trier par Meilleures notes</option>
+                <option value="recent">Trier par Date de sortie</option>
+                <option value="title">Trier de A à Z</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="media-cards-grid" id="catalogGrid"></div>
+          <div class="grid-scroll-loader" id="catalogLoader" style="display:none">
+            <div class="purple-spinner"></div>
+          </div>
+        </section>
+
+        <!-- ==================== 3. VUE EXPLORER & FILTRES COMBINABLES ==================== -->
+        <section class="view-screen" id="view-explore">
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Explorer le Catalogue</h2>
+              <p class="view-subtitle">Filtrez par ambiance, genre et décennie pour trouver votre prochain film.</p>
+            </div>
+          </div>
+
+          <!-- Barre de filtres modulaires -->
+          <div class="explore-filters-bar">
+            <div class="filter-group">
+              <label>Genre</label>
+              <select class="custom-select" id="exploreGenreSelect">
+                <option value="">Tous les genres</option>
+                <option value="28">🔥 Action</option>
+                <option value="12">🗺️ Aventure</option>
+                <option value="16">🧚 Animation</option>
+                <option value="35">😂 Comédie</option>
+                <option value="80">🕵️ Crime & Policier</option>
+                <option value="99">🌍 Documentaire</option>
+                <option value="18">🎭 Drame</option>
+                <option value="27">😱 Horreur</option>
+                <option value="878">👽 Science-Fiction</option>
+                <option value="53">🧠 Thriller</option>
+                <option value="10749">💕 Romance</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Format</label>
+              <select class="custom-select" id="exploreTypeSelect">
+                <option value="all">Films & Séries</option>
+                <option value="movie">Films uniquement</option>
+                <option value="tv">Séries uniquement</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Année</label>
+              <select class="custom-select" id="exploreYearSelect">
+                <option value="">Toutes les années</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2020s">Années 2020</option>
+                <option value="2010s">Années 2010</option>
+                <option value="2000s">Classiques (Avant 2010)</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Trier par</label>
+              <select class="custom-select" id="exploreOrderSelect">
+                <option value="popularity.desc">Plus populaires</option>
+                <option value="vote_average.desc">Mieux notés</option>
+                <option value="primary_release_date.desc">Plus récents</option>
+              </select>
+            </div>
+
+            <button class="btn btn-glass-secondary btn-reset-filters" id="resetExploreFiltersBtn">
+              Réinitialiser
+            </button>
+            <button class="btn btn-purple-solid" id="surpriseMeBtn" style="margin-left:auto;">
+              🎲 Surprends-moi !
+            </button>
+          </div>
+
+          <div class="media-cards-grid" id="exploreGrid"></div>
+          <div class="grid-scroll-loader" id="exploreLoader" style="display:none">
+            <div class="purple-spinner"></div>
+          </div>
+        </section>
+
+        <!-- ==================== 4. VUE RECHERCHE AVANCÉE ==================== -->
+        <section class="view-screen" id="view-search">
+          <div class="search-view-container">
+            <div class="search-view-header">
+              <h2 class="view-title">Recherche avancée</h2>
+              <div class="search-input-pill-wrap">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/></svg>
+                <input type="text" id="dedicatedSearchInput" placeholder="Chercher un film, une série, un réalisateur...">
+                <button class="search-clear-cross" id="dedicatedSearchClear" style="display:none">&times;</button>
+              </div>
+
+              <!-- Filtres rapides sous la recherche (comme dans la maquette haut droite) -->
+              <div class="search-filter-pills">
+                <button class="filter-pill active" data-sfilter="all">Tous</button>
+                <button class="filter-pill" data-sfilter="movie">Films</button>
+                <button class="filter-pill" data-sfilter="tv">Séries</button>
+                <div class="pill-dropdown-wrapper">
+                  <button class="filter-pill" id="searchGenreFilterBtn">Genres ▾</button>
+                  <div class="pill-dropdown-content" id="searchGenreDropdown">
+                    <button data-genre-id="28">🔥 Action</button>
+                    <button data-genre-id="35">😂 Comédie</button>
+                    <button data-genre-id="27">😱 Horreur</button>
+                    <button data-genre-id="878">👽 Sci-Fi</button>
+                    <button data-genre-id="53">🧠 Thriller</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Résultats de recherche -->
+            <div class="search-results-meta" id="searchResultsMeta" style="display:none">
+              <span id="searchResultsCount">0 résultat trouvé</span>
+            </div>
+
+            <div class="media-cards-grid" id="searchResultsGrid"></div>
+            
+            <div class="empty-state-card" id="searchEmptyState" style="display:none">
+              <div class="empty-icon">🔍</div>
+              <h3>Aucun titre correspondant</h3>
+              <p>Essayez avec un autre mot-clé ou parcourez nos recommandations du moment.</p>
+              <button class="btn btn-purple-solid" onclick="app.switchView('home')">Découvrir les tendances</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 5. VUE MA LISTE / BIBLIOTHÈQUE ==================== -->
+        <section class="view-screen" id="view-library">
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Ma Liste Personnelle</h2>
+              <p class="view-subtitle" id="wishlistStatsSubtitle">Tous les films et séries que vous avez sauvegardés pour plus tard.</p>
+            </div>
+            <button class="btn btn-glass-secondary" id="clearWishlistBtn">Tout retirer</button>
+          </div>
+
+          <div class="media-cards-grid" id="libraryGrid"></div>
+
+          <div class="empty-state-card" id="libraryEmptyState" style="display:none">
+            <div class="empty-icon">💜</div>
+            <h3>Votre liste est vide</h3>
+            <p>Cliquez sur l'icône « + Ajouter à ma liste » sur n'importe quel film pour le retrouver ici instantanément.</p>
+            <button class="btn btn-purple-solid" onclick="app.switchView('home')">Explorer le catalogue</button>
+          </div>
+        </section>
+
+        <!-- ==================== 6. VUE HISTORIQUE & REPRISE ==================== -->
+        <section class="view-screen" id="view-history">
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Historique de Visionnage</h2>
+              <p class="view-subtitle">Reprenez vos films et épisodes là où vous vous étiez arrêté.</p>
+            </div>
+            <button class="btn btn-glass-secondary" id="clearHistoryBtn">Effacer l'historique</button>
+          </div>
+
+          <div class="media-cards-grid" id="historyGrid"></div>
+
+          <div class="empty-state-card" id="historyEmptyState" style="display:none">
+            <div class="empty-icon">🕒</div>
+            <h3>Aucun historique pour le moment</h3>
+            <p>Dès que vous commencez à regarder un film ou une série, votre progression sera enregistrée ici.</p>
+            <button class="btn btn-purple-solid" onclick="app.switchView('home')">Commencer un film</button>
+          </div>
+        </section>
+
+        <!-- ==================== 7. VUE TÉLÉCHARGEMENTS (SIMULATION OFF-LINE) ==================== -->
+        <section class="view-screen" id="view-downloads">
+          <div class="view-header-row">
+            <div>
+              <h2 class="view-title">Téléchargements hors-ligne</h2>
+              <p class="view-subtitle">Accédez à vos contenus préchargés sans connexion internet.</p>
+            </div>
+          </div>
+
+          <div class="media-cards-grid" id="downloadsGrid"></div>
+        </section>
+
+        <!-- ==================== 8. VUE MON PROFIL ==================== -->
+        <section class="view-screen" id="view-profile">
+          <div class="profile-page-card">
+            <div class="profile-banner-header">
+              <button class="profile-back-arrow" onclick="app.switchView('home')">←</button>
+              <h2 class="profile-header-title">Mon Profil</h2>
+              <button class="profile-edit-btn" id="editProfileBtn" title="Modifier le profil">✏️</button>
+            </div>
+
+            <!-- Avatar & Identité -->
+            <div class="profile-hero-center">
+              <div class="profile-large-avatar-wrap">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=260&q=80" alt="Avatar" id="profilePageAvatar">
+              </div>
+              <h3 class="profile-hero-name" id="profileHeroName">Ziehi Yotam <span class="crown-hero">👑</span></h3>
+              <div class="profile-hero-status">
+                <span class="status-badge-premium">★ Premium</span>
+                <span class="profile-joined-date">Abonné depuis le 12 janv. 2026</span>
+              </div>
+            </div>
+
+            <!-- 4 Boîtes interactives de stats (Maquette au centre) -->
+            <div class="profile-stats-grid">
+              <div class="profile-stat-box" onclick="app.switchView('history')">
+                <div class="stat-icon-circle purple-play">▶</div>
+                <div class="stat-box-title">Historique</div>
+                <div class="stat-box-val" id="profileStatHistoryVal">(0)</div>
+              </div>
+
+              <div class="profile-stat-box" onclick="app.switchView('library')">
+                <div class="stat-icon-circle purple-heart">💜</div>
+                <div class="stat-box-title">Ma liste</div>
+                <div class="stat-box-val" id="profileStatWishlistVal">(0)</div>
+              </div>
+
+              <div class="profile-stat-box" onclick="app.switchView('downloads')">
+                <div class="stat-icon-circle purple-download">📥</div>
+                <div class="stat-box-title">Téléchargements</div>
+                <div class="stat-box-val" id="profileStatDownloadsVal">(12)</div>
+              </div>
+
+              <div class="profile-stat-box" onclick="app.switchView('settings')">
+                <div class="stat-icon-circle purple-gear">⚙️</div>
+                <div class="stat-box-title">Paramètres</div>
+                <div class="stat-box-val">Compte</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 9. VUE PARAMÈTRES (SETTINGS) ==================== -->
+        <section class="view-screen" id="view-settings">
+          <div class="settings-page-layout">
+            <!-- Navigation des sous-catégories -->
+            <div class="settings-subnav">
+              <h2 class="view-title" style="margin-bottom:16px;">Paramètres</h2>
+              <button class="settings-nav-pill active" data-spanel="account">
+                <span class="icon">👤</span> Compte
+              </button>
+              <button class="settings-nav-pill" data-spanel="playback">
+                <span class="icon">▶</span> Lecture
+              </button>
+              <button class="settings-nav-pill" data-spanel="appearance">
+                <span class="icon">🎨</span> Apparence
+              </button>
+              <button class="settings-nav-pill" data-spanel="notifications">
+                <span class="icon">🔔</span> Notifications
+              </button>
+              <button class="settings-nav-pill" data-spanel="about">
+                <span class="icon">ℹ️</span> À propos
+              </button>
+            </div>
+
+            <!-- Contenu des panneaux de paramètres -->
+            <div class="settings-content-area">
+              <!-- Panneau Compte -->
+              <div class="settings-panel active" id="spanel-account">
+                <h3 class="panel-heading">Mon compte</h3>
+                
+                <div class="settings-card-item">
+                  <div class="settings-user-row">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80" alt="Avatar" class="settings-avatar-preview">
+                    <div>
+                      <div class="settings-user-name" id="settingsAccountName">Ziehi Yotam</div>
+                      <div class="settings-user-email">ziehi.yotam@gmail.com</div>
+                    </div>
+                    <button class="btn btn-glass-secondary btn-sm" id="logoutBtn" style="margin-left:auto;">Déconnexion</button>
+                  </div>
+                </div>
+
+                <h3 class="panel-heading" style="margin-top:24px;">Abonnement</h3>
+                <div class="settings-card-item">
+                  <div class="subscription-flex-row">
+                    <div>
+                      <div class="sub-status-title">👑 Premium Dark Cinema</div>
+                      <div class="sub-status-sub">Accès illimité en 4K Ultra HD & Multi-serveurs sans publicités.</div>
+                    </div>
+                    <span class="sub-active-pill">Actif jusqu'au 12 fév. 2027</span>
+                  </div>
+                </div>
+
+                <h3 class="panel-heading" style="margin-top:24px;">Clé d'API TMDB</h3>
+                <div class="settings-card-item">
+                  <p class="settings-card-desc">Votre clé d'API personnelle pour les métadonnées et affiches en haute résolution :</p>
+                  <div class="settings-input-row">
+                    <input type="text" id="tmdbApiKeyInput" class="custom-text-input" placeholder="Clé d'API TMDB v3">
+                    <button class="btn btn-purple-solid" id="saveApiKeyBtn">Enregistrer</button>
+                  </div>
+                </div>
+
+                <h3 class="panel-heading" style="margin-top:24px;">Sauvegarde & Restauration</h3>
+                <div class="settings-card-item">
+                  <p class="settings-card-desc">Téléchargez une copie de votre liste et historique en JSON pour ne jamais les perdre.</p>
+                  <div class="settings-actions-btn-group">
+                    <button class="btn btn-glass-secondary" id="exportBackupBtn">⬇️ Exporter mes données</button>
+                    <label class="btn btn-glass-secondary" style="cursor:pointer;">
+                      ⬆️ Importer une sauvegarde
+                      <input type="file" id="importBackupInput" accept=".json" style="display:none;">
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panneau Lecture -->
+              <div class="settings-panel" id="spanel-playback">
+                <h3 class="panel-heading">Qualité de lecture</h3>
+                <div class="settings-card-item">
+                  <label class="setting-form-label">Qualité par défaut :</label>
+                  <select class="custom-select" id="playbackQualitySelect">
+                    <option value="auto">Automatique (recommandé selon connexion)</option>
+                    <option value="4k">Ultra HD 4K (Priorité Haute Définition)</option>
+                    <option value="1080p">Full HD 1080p</option>
+                    <option value="720p">HD 720p (Économie de données)</option>
+                  </select>
+                </div>
+
+                <h3 class="panel-heading" style="margin-top:24px;">Serveur de streaming préféré</h3>
+                <div class="settings-card-item">
+                  <label class="setting-form-label">Serveur principal :</label>
+                  <select class="custom-select" id="preferredServerSelect">
+                    <option value="vidzy">Vidzy (VF & VOSTFR natifs - Recommandé)</option>
+                    <option value="vidsrc">VidSrc (Serveur Ultra Rapide)</option>
+                    <option value="embedsu">EmbedSu (HD Multi-langues)</option>
+                    <option value="superembed">SuperEmbed (Fallback)</option>
+                  </select>
+                </div>
+
+                <h3 class="panel-heading" style="margin-top:24px;">Diffusion sur Smart TV & Cast</h3>
+                <div class="settings-card-item">
+                  <p class="settings-card-desc">Accédez directement à ZETFLIX depuis le navigateur de votre Smart TV ou Box :</p>
+                  <div class="tv-url-bar">
+                    <code id="tvLocalUrl">http://192.168.1.8:3000</code>
+                    <button class="btn btn-purple-solid btn-sm" id="copyTvUrlBtn">Copier l'adresse</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panneau Apparence -->
+              <div class="settings-panel" id="spanel-appearance">
+                <h3 class="panel-heading">Thème & Esthétique</h3>
+                <div class="settings-card-item">
+                  <div class="setting-toggle-row">
+                    <div>
+                      <div class="setting-toggle-title">Thème Dark Cinema Premium</div>
+                      <div class="setting-toggle-sub">Palette sombre contrastée (#090910) avec accents violet néon.</div>
+                    </div>
+                    <span class="badge-active">Actif</span>
+                  </div>
+                </div>
+
+                <div class="settings-card-item" style="margin-top:14px;">
+                  <div class="setting-toggle-row">
+                    <div>
+                      <div class="setting-toggle-title">Animations fluides et transitions cinématiques</div>
+                      <div class="setting-toggle-sub">Effets de survol, agrandissement doux des cartes et voiles sombres.</div>
+                    </div>
+                    <input type="checkbox" id="smoothAnimToggle" checked class="custom-switch">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panneau Notifications -->
+              <div class="settings-panel" id="spanel-notifications">
+                <h3 class="panel-heading">Préférences des alertes</h3>
+                <div class="settings-card-item">
+                  <div class="setting-toggle-row">
+                    <div>
+                      <div class="setting-toggle-title">Alertes de sorties de films</div>
+                      <div class="setting-toggle-sub">Recevez une notification dès qu'un film de votre liste devient disponible.</div>
+                    </div>
+                    <button class="btn btn-purple-solid btn-sm" id="settingsEnableNotifBtn">Activer</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panneau À propos -->
+              <div class="settings-panel" id="spanel-about">
+                <h3 class="panel-heading">À propos de ZETFLIX</h3>
+                <div class="settings-card-item">
+                  <div class="about-brand-row">
+                    <span class="brand-name">ZET<span class="brand-name-accent">FLIX</span></span>
+                    <span class="about-version-badge">Version 3.0 — Dark Cinema Premium</span>
+                  </div>
+                  <p class="settings-card-desc" style="margin-top:12px;">
+                    Plateforme web de streaming cinématographique conçue pour allier une expérience visuelle immersive à la liberté de streaming sans publicités indésirables.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       BARRE DE NAVIGATION INFÉRIEURE (MOBILE ONLY)
+       ========================================================================= -->
+  <nav class="mobile-bottom-bar" id="mobileBottomBar">
+    <button class="mob-tab-btn active" data-view="home">
       <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/></svg>
       <span>Accueil</span>
     </button>
-    <button class="mob-nav-btn" data-tab="series">
-      <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z" fill="currentColor"/></svg>
-      <span>Séries</span>
+    <button class="mob-tab-btn" data-view="explore">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM14.19 14.19L6 18L9.81 9.81L18 6L14.19 14.19Z" fill="currentColor"/></svg>
+      <span>Explorer</span>
     </button>
-    <button class="mob-nav-btn" data-tab="movies">
-      <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z" fill="currentColor"/></svg>
-      <span>Films</span>
+    <button class="mob-tab-btn" data-view="search">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/></svg>
+      <span>Recherche</span>
     </button>
-    <button class="mob-nav-btn" data-tab="genres">
-      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
-      <span>Genres</span>
+    <button class="mob-tab-btn" data-view="library">
+      <svg viewBox="0 0 24 24"><path d="M17 3H7C5.9 3 5.01 3.9 5.01 5L5 21L12 18L19 21V5C19 3.9 18.1 3 17 3Z" fill="currentColor"/></svg>
+      <span>Ma liste</span>
     </button>
-    <button class="mob-nav-btn" data-tab="wishlist">
-      <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg>
-      <span>Ma liste <span id="mobWishlistCount" class="mob-badge" style="display:none">0</span></span>
-    </button>
-    <button class="mob-nav-btn" data-tab="history">
-      <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7a6.97 6.97 0 0 1-5.1-2.21l-1.42 1.42A8.96 8.96 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" fill="currentColor"/></svg>
-      <span>Historique</span>
+    <button class="mob-tab-btn" data-view="profile">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/></svg>
+      <span>Profil</span>
     </button>
   </nav>
 
-  <!-- ===================== BILLBOARD HERO (NETFLIX BANNER) ===================== -->
-  <section class="billboard-hero" id="billboardHero">
-    <div class="billboard-backdrop" id="heroBackdrop"></div>
-    <div class="billboard-vignette"></div>
-    <div class="billboard-content">
-      <div class="billboard-badge-row">
-        <span class="zetflix-n-logo">Z</span>
-        <span class="billboard-type" id="heroTypeBadge">FILM</span>
-      </div>
-      <h1 class="billboard-title" id="heroTitle">Chargement...</h1>
-      <div class="billboard-meta-row" id="heroMetaRow">
-        <span class="match-score">Recommandé à 98%</span>
-        <span class="hero-year" id="heroYear">2026</span>
-        <span class="age-rating">16+</span>
-        <span class="hd-badge">Ultra HD 4K</span>
-      </div>
-      <p class="billboard-synopsis" id="heroSynopsis"></p>
-      <div class="billboard-links">
-        <button class="btn-netflix-play" id="heroPlayBtn">
-          <svg viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z" fill="currentColor"/></svg>
-          <span>Lecture</span>
-        </button>
-        <button class="btn-netflix-info" id="heroInfoBtn">
-          <svg viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor"/></svg>
-          <span>Plus d'infos</span>
-        </button>
-        <button class="btn-netflix-circle" id="heroWishlistBtn" title="Ajouter à ma liste">
-          <span id="heroWishlistIcon">+</span>
-        </button>
-      </div>
-    </div>
-  </section>
+  <!-- =========================================================================
+       MODALE 1 : FICHE DÉTAILLÉE D'UN FILM / SÉRIE (DETAILS MODAL)
+       ========================================================================= -->
+  <div class="modal-backdrop-overlay" id="detailsModal">
+    <div class="modal-backdrop-blur" id="closeDetailsBackdrop"></div>
+    <div class="details-modal-box">
+      <button class="modal-close-circle" id="closeDetailsBtn">&times;</button>
+      
+      <!-- Backdrop avec dégradé cinématique -->
+      <div class="details-hero-banner">
+        <img src="" alt="" id="modalBackdropImg" class="details-hero-img">
+        <div class="details-hero-gradient"></div>
+        <div class="details-hero-info">
+          <div class="details-type-badge" id="modalTypeBadge">FILM</div>
+          <h2 class="details-title" id="modalTitle">Titre du film</h2>
+          
+          <div class="details-meta-pills">
+            <span class="rating-badge" id="modalRating">★ 8.4</span>
+            <span id="modalYear">2024</span>
+            <span class="hd-pill">Ultra HD 4K</span>
+            <span id="modalRuntime">2h 15min</span>
+          </div>
 
-  <!-- ===================== MAIN CONTENT (NETFLIX ROWS) ===================== -->
-  <main class="netflix-container" id="netflixContainer">
-
-    <!-- Section Title when browsing a specific category / search -->
-    <div class="filter-header" id="filterHeader" style="display:none">
-      <h2 id="filterTitle">Films</h2>
-      <span class="filter-count" id="filterCount"></span>
-    </div>
-
-    <!-- Genre Selector Section (Feature 3) -->
-    <section class="genre-mood-section" id="genreMoodSection" style="display:none">
-      <div class="genre-mood-header">
-        <h2>Qu'est-ce qu'on regarde ce soir ?</h2>
-        <p>Sélectionnez une ambiance ou laissez Zetflix décider pour vous.</p>
-        <button class="btn-netflix-play btn-surprise" id="surpriseMoodBtn">
-          🎲 Surprends-moi !
-        </button>
-      </div>
-      <div class="genre-bubbles-grid" id="genreBubblesGrid"></div>
-    </section>
-
-    <!-- Rows container (Homepage rows) -->
-    <div class="rows-container" id="rowsContainer"></div>
-
-    <!-- Grid container (when browsing Movies, Series, Wishlist, Search) -->
-    <div class="grid-container" id="gridContainer" style="display:none"></div>
-
-    <!-- Empty State -->
-    <div class="empty-state" id="emptyState" style="display:none">
-      <div class="empty-icon" id="emptyIcon">🍿</div>
-      <h3 id="emptyTitle">Aucun titre disponible</h3>
-      <p id="emptyDesc">Explorez nos milliers de films et séries.</p>
-      <button class="btn-netflix-play" id="emptyActionBtn" style="display:none">Explorer</button>
-    </div>
-
-    <!-- Infinite Scroll Loader -->
-    <div class="netflix-loader" id="pageLoader" style="display:none">
-      <div class="netflix-spinner"></div>
-    </div>
-  </main>
-
-  <!-- ===================== NETFLIX PREVIEW MODAL (QUICK VIEW / MORE INFO) ===================== -->
-  <div class="modal-overlay" id="previewModal">
-    <div class="modal-backdrop" id="previewBackdrop"></div>
-    <div class="preview-dialog">
-      <button class="modal-close-round" id="closePreviewBtn">&times;</button>
-      <div class="preview-hero">
-        <img id="previewBackdropImg" src="" alt="Aperçu">
-        <div class="preview-gradient"></div>
-        <div class="preview-hero-content">
-          <h2 id="previewTitle">Titre</h2>
-          <div class="preview-actions">
-            <button class="btn-netflix-play" id="previewPlayBtn">
-              <svg viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z" fill="currentColor"/></svg>
-              <span>Lecture</span>
+          <div class="details-actions">
+            <button class="btn btn-purple-solid" id="modalPlayBtn">
+              <svg viewBox="0 0 24 24"><path d="M8 5V19L19 12L8 5Z" fill="currentColor"/></svg>
+              <span>Regarder maintenant</span>
             </button>
-            <button class="btn-netflix-circle" id="previewWishlistBtn" title="Ma liste">
-              <span id="previewWishlistIcon">+</span>
+            <button class="btn btn-glass-secondary" id="modalWishlistBtn">
+              <svg viewBox="0 0 24 24"><path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor"/></svg>
+              <span id="modalWishlistText">Ajouter à ma liste</span>
             </button>
           </div>
         </div>
       </div>
-      <div class="preview-details">
-        <div class="preview-details-left">
-          <div class="preview-meta">
-            <span class="match-score">Recommandé à 97%</span>
-            <span id="previewYear">2026</span>
-            <span class="age-rating">16+</span>
-            <span id="previewTypeBadge" class="hd-badge">Film</span>
-            <span id="previewRating">⭐ 8.1</span>
-          </div>
-          <p id="previewOverview" class="preview-overview"></p>
-        </div>
-        <div class="preview-details-right">
-          <div class="preview-info-line">
-            <span class="label">Genres :</span>
-            <span id="previewGenres" class="val">Action, Drame</span>
-          </div>
-          <div class="preview-info-line">
-            <span class="label">Audio :</span>
-            <span class="val">Français (VF), Anglais (VOSTFR)</span>
-          </div>
-          <div class="preview-info-line">
-            <span class="label">Serveurs :</span>
-            <span class="val">Vidzy (Auto), VidSrc, EmbedSu</span>
+
+      <!-- Description détaillée & Casting -->
+      <div class="details-body">
+        <div class="details-left-col">
+          <h4 class="section-micro-title">SYNOPSIS</h4>
+          <p class="details-overview-text" id="modalOverview">Description détaillée du film...</p>
+
+          <!-- Sélecteur de saison et épisode si c'est une série -->
+          <div class="series-episodes-block" id="modalSeriesEpisodesBlock" style="display:none;">
+            <h4 class="section-micro-title" style="margin-top:20px;">ÉPISODES</h4>
+            <div class="series-season-select-wrap">
+              <select class="custom-select" id="modalSeasonSelect"></select>
+            </div>
+            <div class="series-episodes-list" id="modalEpisodesList"></div>
           </div>
         </div>
+
+        <div class="details-right-col">
+          <div class="meta-field">
+            <span class="meta-field-label">Genres :</span>
+            <span class="meta-field-val" id="modalGenres">Action, Science-fiction</span>
+          </div>
+          <div class="meta-field">
+            <span class="meta-field-label">Langues disponibles :</span>
+            <span class="meta-field-val">VF (Français), VOSTFR, Multi</span>
+          </div>
+          <div class="meta-field">
+            <span class="meta-field-label">Serveurs de streaming :</span>
+            <span class="meta-field-val">Vidzy (Principal), VidSrc, EmbedSu</span>
+          </div>
+          <div class="meta-field">
+            <span class="meta-field-label">Qualité :</span>
+            <span class="meta-field-val text-accent">4K HDR Dolby Vision</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Titres similaires recommandés -->
+      <div class="similar-movies-container">
+        <h4 class="section-micro-title" style="padding:0 28px;">TITRES SIMILAIRES RECOMMANDÉS</h4>
+        <div class="similar-movies-track" id="modalSimilarTrack"></div>
       </div>
     </div>
   </div>
 
-  <!-- ===================== NETFLIX PLAYER FULLSCREEN MODAL ===================== -->
-  <div class="player-overlay" id="playerModal">
+  <!-- =========================================================================
+       MODALE 2 : LECTEUR VIDÉO IMMERSIF (CONFORME MAQUETTE BAS GAUCHE)
+       ========================================================================= -->
+  <div class="player-fullscreen-overlay" id="videoPlayerModal">
+    <!-- Barre supérieure de commandes du lecteur -->
     <div class="player-topbar">
-      <button class="player-back-btn" id="playerBackBtn" title="Retour">
+      <button class="player-exit-btn" id="playerExitBtn" title="Fermer le lecteur">
         <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/></svg>
       </button>
-      <div class="player-info-title">
-        <span id="playerMediaTitle">Titre du média</span>
-        <span class="player-sub-badge" id="playerSubBadge">Film</span>
+      <div class="player-title-box">
+        <span class="player-main-title" id="playerTitle">Spider-Man : No Way Home</span>
+        <span class="player-episode-badge" id="playerEpisodeBadge" style="display:none">S1 : E1</span>
       </div>
-      <div class="player-topbar-actions">
-        <!-- Choix du Serveur -->
-        <div class="dropdown-select-wrap">
-          <label for="serverSelect">Serveur :</label>
-          <select id="serverSelect" class="netflix-select">
-            <option value="vidzy" selected>Vidzy (VF / VOSTFR)</option>
-            <option value="vidsrc">VidSrc (Rapide)</option>
-            <option value="embedsu">EmbedSu (HD Multi)</option>
+
+      <div class="player-topbar-right">
+        <!-- Sélecteur de Serveurs sans pub -->
+        <div class="player-dropdown-wrap">
+          <label class="player-control-lbl">Serveur :</label>
+          <select class="custom-select select-sm" id="playerServerSelect">
+            <option value="vidzy" selected>Vidzy (VF/VOSTFR)</option>
+            <option value="vidsrc">VidSrc (Alternative HD)</option>
+            <option value="embedsu">EmbedSu (Multi-flux)</option>
             <option value="superembed">SuperEmbed</option>
           </select>
         </div>
 
-        <!-- Pour les séries: Sélection Saison & Épisode -->
-        <div class="series-nav-group" id="seriesNavGroup" style="display:none">
-          <select id="playerSeasonSelect" class="netflix-select" title="Saison"></select>
-          <select id="playerEpisodeSelect" class="netflix-select" title="Épisode"></select>
-        </div>
-
-        <!-- Audio -->
-        <div class="dropdown-select-wrap">
-          <label for="langSelect">Audio :</label>
-          <select id="langSelect" class="netflix-select">
-            <option value="">Auto (Recommandé)</option>
-            <option value="vf">VF (Français)</option>
+        <!-- Sélecteur Audio / Langue -->
+        <div class="player-dropdown-wrap">
+          <label class="player-control-lbl">Audio :</label>
+          <select class="custom-select select-sm" id="playerLangSelect">
+            <option value="">Auto (VF)</option>
+            <option value="vf">Français (VF)</option>
             <option value="vostfr">VOSTFR</option>
           </select>
         </div>
 
-        <button class="btn-netflix-check" id="markWatchedBtn" title="Marquer comme vu">
-          ✓ Vu
+        <!-- Caster sur Smart TV -->
+        <button class="player-icon-action" id="playerCastBtn" title="Caster sur TV">
+          <svg viewBox="0 0 24 24"><path d="M1 18V21H4C4 19.34 2.66 18 1 18ZM1 14V16C3.76 16 6 18.24 6 21H8C8 17.13 4.87 14 1 14ZM1 10V12C5.97 12 10 16.03 10 21H12C12 14.92 7.07 10 1 10ZM21 3H3C1.9 3 1 3.9 1 5V8H3V5H21V19H14V21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3Z" fill="currentColor"/></svg>
+        </button>
+
+        <!-- Sous-titres [CC] -->
+        <button class="player-icon-action" title="Sous-titres">
+          <svg viewBox="0 0 24 24"><path d="M19 4H5C3.89 4 3 4.89 3 6V18C3 19.1 3.89 20 5 20H19C20.1 20 21 19.1 21 18V6C21 4.89 20.1 4 19 4ZM11 11H9.5V10.5H7.5V13.5H9.5V13H11V14C11 14.55 10.55 15 10 15H7C6.45 15 6 14.55 6 14V10C6 9.45 6.45 9 7 9H10C10.55 9 11 9.45 11 10V11ZM18 11H16.5V10.5H14.5V13.5H16.5V13H18V14C18 14.55 17.55 15 17 15H14C13.45 15 13 14.55 13 14V10C13 9.45 13.45 9 14 9H17C17.55 9 18 9.45 18 10V11Z" fill="currentColor"/></svg>
+        </button>
+
+        <!-- Plein écran -->
+        <button class="player-icon-action" id="playerFullscreenToggleBtn" title="Plein écran">
+          <svg viewBox="0 0 24 24"><path d="M7 14H5V19H10V17H7V14ZM5 10H7V7H10V5H5V10ZM17 17H14V19H19V14H17V17ZM14 5V7H17V10H19V5H14Z" fill="currentColor"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- Container Iframe Vidzy / Sandboxed -->
-    <div class="player-video-wrapper">
-      <div class="player-loading-spin" id="playerLoading">
-        <div class="netflix-spinner"></div>
-        <span>Connexion au flux vidéo sécurisé...</span>
+    <!-- Iframe du lecteur Vidzy sandboxed anti-popups -->
+    <div class="player-video-viewport">
+      <div class="player-loading-splash" id="playerLoaderSpinner">
+        <div class="purple-spinner"></div>
+        <span>Connexion sécurisée au flux vidéo ZETFLIX...</span>
       </div>
       <iframe 
-        id="videoIframe" 
+        id="streamingIframe" 
         src="" 
         sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-encrypted-media"
         allow="autoplay; fullscreen; encrypted-media; picture-in-picture" 
         allowfullscreen>
       </iframe>
     </div>
-  </div>
 
-  <!-- ===================== SETTINGS / BACKUP MODAL ===================== -->
-  <div class="modal-overlay" id="settingsModal">
-    <div class="modal-backdrop" id="settingsBackdrop"></div>
-    <div class="simple-modal-dialog">
-      <button class="modal-close-round" id="closeSettingsBtn">&times;</button>
-      <h3>Sauvegarde & Paramètres Zetflix</h3>
-      <p class="modal-subtitle">Gérez vos données locales pour ne jamais perdre votre liste et votre historique.</p>
-
-      <div class="stats-row">
-        <div class="stat-box">
-          <span class="stat-number" id="statsWatchedCount">0</span>
-          <span class="stat-label">Titres regardés</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-number" id="statsWishlistCount">0</span>
-          <span class="stat-label">Dans Ma Liste</span>
+    <!-- Barre inférieure de contrôle (Conforme à la maquette bas gauche) -->
+    <div class="player-bottombar">
+      <!-- Barre de progression interactive violette néon -->
+      <div class="player-progress-bar-wrap" id="playerProgressWrap">
+        <div class="player-progress-track">
+          <div class="player-progress-fill" id="playerProgressFill" style="width: 25%;"></div>
+          <div class="player-progress-handle" id="playerProgressHandle"></div>
         </div>
       </div>
 
-      <div class="action-section">
-        <h4>Sauvegarder mes données</h4>
-        <p class="helper-text">Téléchargez une sauvegarde JSON pour restaurer vos listes sur n'importe quel appareil.</p>
-        <div class="btn-group-row">
-          <button class="btn-netflix-info" id="exportDataBtn">⬇️ Exporter le fichier</button>
-          <label class="btn-netflix-info" style="cursor:pointer">
-            ⬆️ Importer un fichier
-            <input type="file" id="importDataInput" accept=".json" style="display:none">
-          </label>
+      <div class="player-bottom-controls-row">
+        <!-- Contrôles gauche : Temps & Volume -->
+        <div class="player-controls-left">
+          <button class="control-btn" id="playerVolumeBtn" title="Couper le son">
+            <svg viewBox="0 0 24 24"><path d="M3 9V15H7L12 20V4L7 9H3ZM16.5 12C16.5 10.23 15.48 8.71 14 7.97V16.02C15.48 15.29 16.5 13.77 16.5 12ZM14 3.23V5.29C16.89 6.15 19 8.83 19 12C19 15.17 16.89 17.85 14 18.71V20.77C18.01 19.86 21 16.28 21 12C21 7.72 18.01 4.14 14 3.23Z" fill="currentColor"/></svg>
+          </button>
+          <span class="player-time-display" id="playerTimeDisplay">24:18 / 2:28:15</span>
         </div>
-      </div>
 
-      <div class="action-section">
-        <h4>Clé TMDB</h4>
-        <input type="text" id="apiKeyInput" class="netflix-input" placeholder="Clé d'API TMDB">
-        <button class="btn-netflix-play" id="saveApiKeyBtn" style="margin-top:10px">Sauvegarder la clé</button>
-      </div>
-    </div>
-  </div>
+        <!-- Contrôles centre : -10s, Play/Pause, +10s -->
+        <div class="player-controls-center">
+          <button class="control-btn-circle" id="playerRewind10Btn" title="Reculer de 10 secondes">
+            <span class="icon-number">10</span>
+            <svg viewBox="0 0 24 24"><path d="M12.5 8C9.85 8 7.45 9 5.6 10.6L2 7V16H11L7.38 12.38C8.77 11.22 10.54 10.5 12.5 10.5C16.09 10.5 19 13.41 19 17C19 20.59 16.09 23.5 12.5 23.5C9.43 23.5 6.89 21.36 6.2 18.5H3.64C4.38 22.8 8.08 26 12.5 26C17.47 26 21.5 21.97 21.5 17C21.5 12.03 17.47 8 12.5 8Z" fill="currentColor"/></svg>
+          </button>
 
-  <!-- ===================== SMART TV / CAST MODAL ===================== -->
-  <div class="modal-overlay" id="castModal">
-    <div class="modal-backdrop" id="castBackdrop"></div>
-    <div class="simple-modal-dialog">
-      <button class="modal-close-round" id="closeCastBtn">&times;</button>
-      <h3>📺 Regarder Zetflix sur votre Smart TV</h3>
-      <p class="modal-subtitle">Plusieurs méthodes simples pour diffuser vos films et séries sur grand écran :</p>
+          <button class="control-btn-play-pause" id="playerPlayPauseBtn" title="Lecture / Pause">
+            <svg id="iconPlay" viewBox="0 0 24 24" style="display:none;"><path d="M8 5V19L19 12L8 5Z" fill="currentColor"/></svg>
+            <svg id="iconPause" viewBox="0 0 24 24"><path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="currentColor"/></svg>
+          </button>
 
-      <div class="tv-option-card">
-        <div class="tv-icon">🌐</div>
-        <div class="tv-text">
-          <strong>Navigateur TV / Téléphone / Tablette</strong>
-          <p>Assurez-vous d'être connecté au même Wi-Fi, ouvrez le navigateur de votre TV et rendez-vous sur :</p>
-          <div class="copy-url-bar">
-            <code id="localTvUrl">http://192.168.1.8:3000</code>
-            <button class="btn-netflix-play btn-sm" id="copyTvUrlBtn">Copier</button>
-          </div>
+          <button class="control-btn-circle" id="playerForward10Btn" title="Avancer de 10 secondes">
+            <span class="icon-number">10</span>
+            <svg viewBox="0 0 24 24"><path d="M11.5 8C14.15 8 16.55 9 18.4 10.6L22 7V16H13L16.62 12.38C15.23 11.22 13.46 10.5 11.5 10.5C7.91 10.5 5 13.41 5 17C5 20.59 7.91 23.5 11.5 23.5C14.57 23.5 17.11 21.36 17.8 18.5H20.36C19.62 22.8 15.92 26 11.5 26C6.53 26 2.5 21.97 2.5 17C2.5 12.03 6.53 8 11.5 8Z" fill="currentColor"/></svg>
+          </button>
         </div>
-      </div>
 
-      <div class="tv-option-card">
-        <div class="tv-icon">📡</div>
-        <div class="tv-text">
-          <strong>Chromecast / Google Cast</strong>
-          <p>Faites un clic droit n'importe où dans Google Chrome et cliquez sur <em>« Caster... »</em> pour envoyer l'onglet directement vers votre télévision.</p>
+        <!-- Contrôles droite : Épisodes, Paramètres, Plein écran -->
+        <div class="player-controls-right">
+          <button class="control-btn" id="markWatchedCheckBtn" title="Marquer comme vu">
+            ✓ Marquer vu
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Scripts -->
-  <script src="config.js?v=zetflix-1"></script>
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="app.js?v=zetflix-v3"></script>
+  <script src="config.js?v=dark-cinema-premium-1"></script>
+  <script src="app.js?v=dark-cinema-premium-1"></script>
 </body>
 </html>
